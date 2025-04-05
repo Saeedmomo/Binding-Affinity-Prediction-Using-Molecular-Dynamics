@@ -1,8 +1,8 @@
-# 🧪 Ligand–Protein Interaction Modeling Using Molecular Dynamics and Hybrid Machine Learning
+# Ligand–Protein Interaction Modeling Using Molecular Dynamics and Hybrid Machine Learning
 
 This repository contains the full pipeline for a scientific study that develops and evaluates a **hybrid machine learning model** for predicting **PIC50** values from **molecular dynamics (MD)** simulation data, **ligand features**, **AlphaFold structural confidence**, and **interaction energy descriptors**.
 
-## 📌 Project Objective
+## Project Objective
 
 To design and validate a predictive pipeline that accurately estimates **ligand–protein binding affinity (PIC50)** using a robust hybrid model that combines:
 - Classical machine learning (Nu-SVR)
@@ -11,13 +11,13 @@ To design and validate a predictive pipeline that accurately estimates **ligand�
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ├── data/ │ ├── features/ # Final feature CSV files │ └── json/ # AlphaFold JSON structure files ├── scripts/ │ ├── extract_alphaFold_features.py │ ├── ligand_pca_feature_extraction.py │ ├── interaction_energy_calculator.py │ ├── classical_ml_pipeline.py │ ├── hybrid_model_training.py ├── models/ │ ├── saved_dnn_model.h5 │ ├── saved_svr_model.pkl ├── outputs/ │ ├── pca_plots/ │ ├── predictions/ │ └── evaluation_metrics/ ├── Interaction_Force_Feature_Engineering.docx └── README.md
 
 ---
 
-## 🧰 Feature Engineering Pipeline
+## Feature Engineering Pipeline
 
 Each ligand–protein complex was represented using **multiple categories of descriptors**, extracted from MD simulations and precomputed data:
 
@@ -52,7 +52,7 @@ Each ligand–protein complex was represented using **multiple categories of des
 
 ---
 
-## 🧠 Machine Learning Pipeline
+##  Machine Learning Pipeline
 
 ### 🔹 Classical ML Models
 - Evaluated 10 regressors including Linear, SVR, Decision Tree, Random Forest, XGBoost
@@ -69,7 +69,7 @@ Each ligand–protein complex was represented using **multiple categories of des
 
 ---
 
-## 📊 Model Evaluation
+##  Model Evaluation
 
 | **Model**   | **Train R²** | **CV R²** | **Test R²** | **Holdout R²** | **MSE** |
 |-------------|--------------|-----------|-------------|----------------|----------|
@@ -78,7 +78,7 @@ Each ligand–protein complex was represented using **multiple categories of des
 
 ---
 
-## 📦 Requirements
+##  Requirements
 
 Install all dependencies via:
 
