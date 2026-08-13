@@ -1,0 +1,201 @@
+{
+ "dataset": "md_core89",
+ "label": "MD + energetics + ligand-PCA + residue forces",
+ "split_regime": "structure_disjoint",
+ "random_state": 1,
+ "n_features": 89,
+ "descriptor_order": [
+  "PL RMSD",
+  "PL RMSF",
+  "L RMSD",
+  "L RMSF",
+  "Docking score",
+  "protein_angle",
+  "ligand_angle",
+  "water_angle",
+  "metal_angle",
+  "protein_dihedral",
+  "ligand_dihedral",
+  "water_dihedral",
+  "metal_dihedral",
+  "protein_elec",
+  "ligand_elec",
+  "water_elec",
+  "metal_elec",
+  "protein_stretch",
+  "ligand_stretch",
+  "water_stretch",
+  "metal_stretch",
+  "protein_vdw",
+  "ligand_vdw",
+  "water_vdw",
+  "metal_vdw",
+  "protein-ligand_angle",
+  "protein-water_angle",
+  "protein-metal_angle",
+  "ligand-water_angle",
+  "ligand-metal_angle",
+  "water-metal_angle",
+  "protein-ligand_dihedral",
+  "protein-water_dihedral",
+  "protein-metal_dihedral",
+  "ligand-water_dihedral",
+  "ligand-metal_dihedral",
+  "water-metal_dihedral",
+  "protein-ligand_elec",
+  "protein-water_elec",
+  "protein-metal_elec",
+  "ligand-water_elec",
+  "ligand-metal_elec",
+  "water-metal_elec",
+  "protein-ligand_stretch",
+  "protein-water_stretch",
+  "protein-metal_stretch",
+  "ligand-water_stretch",
+  "ligand-metal_stretch",
+  "water-metal_stretch",
+  "protein-ligand_vdw",
+  "protein-water_vdw",
+  "protein-metal_vdw",
+  "ligand-water_vdw",
+  "ligand-metal_vdw",
+  "water-metal_vdw",
+  "Explained-variance-ratio-pc1",
+  "Explained-variance-ratio-pc2",
+  "Explained-variance-ratio-pc3",
+  "PCA-components-shape1",
+  "PCA-components-shape2",
+  "Average-structure-shape",
+  "SASA",
+  "ALA",
+  "ARG",
+  "ASN",
+  "ASP",
+  "CYS",
+  "GLN",
+  "GLU",
+  "GLY",
+  "HIS",
+  "ILE",
+  "LEU",
+  "LYS",
+  "MET",
+  "PHE",
+  "PRO",
+  "SER",
+  "THR",
+  "TRP",
+  "TYR",
+  "VAL",
+  "Total energy",
+  "Potential energy",
+  "Kinetic energy",
+  "Coulombic energy",
+  "Excluded volume interactions",
+  "Energy with forces",
+  "SS charges_atoms"
+ ],
+ "nusvr_params": {
+  "model__C": 10.0,
+  "model__kernel": "rbf",
+  "model__nu": 0.1
+ },
+ "n_components": 19,
+ "ridge_coef": [
+  0.8938408673093106,
+  0.12373379330984209
+ ],
+ "ridge_intercept": 0.1989749879837568,
+ "split_sizes": {
+  "train": 84,
+  "test": 25,
+  "holdout": 13
+ },
+ "performance": {
+  "nusvr": {
+   "train": {
+    "r2": 0.9049,
+    "mse": 0.1938,
+    "rmse": 0.4402,
+    "mae": 0.397,
+    "pearson_r": 0.9587,
+    "spearman_rho": 0.8175
+   },
+   "test": {
+    "r2": 0.7984,
+    "mse": 0.2296,
+    "rmse": 0.4792,
+    "mae": 0.394,
+    "pearson_r": 0.9006,
+    "spearman_rho": 0.5892
+   },
+   "holdout": {
+    "r2": 0.8435,
+    "mse": 0.1715,
+    "rmse": 0.4141,
+    "mae": 0.3284,
+    "pearson_r": 0.9201,
+    "spearman_rho": 0.4814
+   }
+  },
+  "dnn": {
+   "train": {
+    "r2": 0.1423,
+    "mse": 1.7487,
+    "rmse": 1.3224,
+    "mae": 1.1495,
+    "pearson_r": 0.9245,
+    "spearman_rho": 0.8104
+   },
+   "test": {
+    "r2": -0.1111,
+    "mse": 1.2655,
+    "rmse": 1.1249,
+    "mae": 0.953,
+    "pearson_r": 0.8643,
+    "spearman_rho": 0.6362
+   },
+   "holdout": {
+    "r2": -0.2179,
+    "mse": 1.3345,
+    "rmse": 1.1552,
+    "mae": 1.0044,
+    "pearson_r": 0.9331,
+    "spearman_rho": 0.4787
+   }
+  },
+  "hybrid": {
+   "train": {
+    "r2": 0.8942,
+    "mse": 0.2157,
+    "rmse": 0.4645,
+    "mae": 0.391,
+    "pearson_r": 0.9628,
+    "spearman_rho": 0.8469
+   },
+   "test": {
+    "r2": 0.7493,
+    "mse": 0.2855,
+    "rmse": 0.5343,
+    "mae": 0.4375,
+    "pearson_r": 0.903,
+    "spearman_rho": 0.6077
+   },
+   "holdout": {
+    "r2": 0.8099,
+    "mse": 0.2083,
+    "rmse": 0.4564,
+    "mae": 0.365,
+    "pearson_r": 0.9261,
+    "spearman_rho": 0.4814
+   }
+  }
+ },
+ "versions": {
+  "sklearn": "1.9.0",
+  "numpy": "2.5.1",
+  "tensorflow": "2.21.0",
+  "joblib": "1.5.3"
+ },
+ "note": "nusvr.joblib takes raw descriptors in descriptor_order and returns pIC50. dnn.keras expects the output of dnn_preprocessor.joblib. ridge_meta.joblib combines [nusvr_prediction, dnn_prediction]."
+}

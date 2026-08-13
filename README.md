@@ -36,19 +36,49 @@ imposed by the dataset's repeated structures.
 ## Repository layout
 
 ```
-src/        analysis code (see "Reproducing the results")
+src/
+  feature_extraction/   AlphaFold, ligand PCA and interaction-force descriptors
+  *.py                  modelling, quantum chemistry, statistics, figures, tables
+models/
+  md_core89/            the best model in the study; use this one
+  md272/                the 272-descriptor configuration, for continuity
 data/
-  inputs/   the descriptor matrices the models are trained on
-  dft/      quantum-chemistry geometries, per-molecule outputs and descriptors
-  ligands_122_*.csv   the join key: identifiers, SMILES, pIC50, target
-results/    every metric, per-molecule prediction, and a run manifest
-tables/     publication tables (CSV and DOCX)
-figures/    publication figures (PNG and PDF, 600 dpi)
-docs/       verified record of the data, and the corrections applied
+  inputs/               the descriptor matrices the models are trained on
+  dft/                  quantum-chemistry geometries, per-molecule outputs, descriptors
+  ligands_122_*.csv     the join key: identifiers, SMILES, pIC50, target
+results/                every metric, per-molecule prediction, and a run manifest
+tables/                 publication tables (CSV and DOCX)
+figures/                publication figures (PNG and PDF, 600 dpi)
+docs/                   verified record of the data, and the corrections applied
 ```
 
 `docs/GROUND_TRUTH.md` documents the provenance of every input file and the checks
 performed on it. Read it before modifying anything.
+
+---
+
+## Predicting new molecules
+
+```bash
+python src/predict.py --input my_descriptors.csv --output predictions.csv --id-column name
+```
+
+The input CSV must contain the descriptors listed in `models/md_core89/metadata.json`
+under `descriptor_order`; column order does not matter and extra columns are ignored.
+Missing descriptors are reported rather than imputed.
+
+Each model directory holds the Nu-SVR pipeline (raw descriptors in, pIC50 out), the deep
+network with its own preprocessor, the Ridge meta-learner, and a metadata file recording
+hyperparameters, per-subset performance, descriptor order and the library versions used
+to write the files. Pickled estimators are only guaranteed to load under the scikit-learn
+version that produced them; `predict.py` warns on a mismatch, and `src/save_models.py`
+regenerates them.
+
+`pred_pIC50` reports the Nu-SVR prediction, which is the recommended single estimate.
+The deep network and stacked predictions are also written for comparison.
+
+The training set spans pIC50 3.95 to 9.72 across four targets. Anything outside that
+chemical space, or against a different protein, is extrapolation.
 
 ---
 
@@ -65,6 +95,7 @@ python src/rerun_dnn_variants.py       # the four deep-network architectures, 5 
 python src/shap_md_core.py             # SHAP attribution of the MD core
 python src/paired_tests.py             # paired Wilcoxon comparisons between descriptor sets
 python src/make_tables.py && python src/make_figures.py
+python src/save_models.py              # refit and persist the models in models/
 ```
 
 Quantum-chemical descriptors are generated on Linux (or WSL) and require PySCF and xtb:
