@@ -1,0 +1,5 @@
+Held-out target,Molecules,R2,RMSE,RMSE of training mean
+ESR1,26,-0.135,0.468,0.95
+MAPK1,30,-0.067,0.676,1.061
+TDP1,43,-1.579,2.407,2.431
+TP53,23,-2.641,0.708,0.993

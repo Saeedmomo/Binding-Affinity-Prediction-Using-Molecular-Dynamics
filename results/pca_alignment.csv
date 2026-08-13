@@ -1,0 +1,5 @@
+Representation,Descriptors,Variance in 17 components (%),Largest component correlation with potency,Rank of that component
+Simulation-derived,89,93.1,0.66,2
+PaDEL,1444,86.6,0.548,1
+PyDescriptor,62571,86.3,0.377,9
+Quantum-chemical,109,95.5,0.288,3
