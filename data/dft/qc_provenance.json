@@ -1,0 +1,75 @@
+{
+ "n_records": 122,
+ "n_ok": 122,
+ "n_failed": 0,
+ "failures": [],
+ "method": "GFN2-xTB(opt, tight) then B3LYP/def2-SVP//RI-J single point (PySCF)",
+ "ecp": "def2-svp ECP (iodine)",
+ "dft_converged": 122,
+ "n_basis_min": 264,
+ "n_basis_max": 742,
+ "total_cpu_minutes": 740.6,
+ "median_seconds_per_molecule": 173.3,
+ "dropped_constant_columns": [
+  "xtb_Gshift_Eh"
+ ],
+ "n_features": 109,
+ "anion_caveat": "1 anionic ligand(s) (Mol_120) have destabilised frontier orbitals (HOMO -1.61 eV, LUMO +1.47 eV). A positive LUMO means the extra electron is unbound in a gas-phase def2-SVP treatment, so the Koopmans reactivity indices for these rows (electrophilicity, chemical potential) are not comparable with the neutral and cationic ligands and should be treated as flagged values.",
+ "sanity_checks": [
+  {
+   "name": "all SCF converged",
+   "passed": true,
+   "detail": "122/122"
+  },
+  {
+   "name": "HOMO below LUMO for every molecule",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "gap in a chemically sane 0.5-9 eV window",
+   "passed": true,
+   "detail": "range 2.15-5.39 eV"
+  },
+  {
+   "name": "HOMO in -12..-3 eV for neutral ligands",
+   "passed": true,
+   "detail": "n=107, range -7.47..-4.36"
+  },
+  {
+   "name": "HOMO in -12..-3 eV for cations",
+   "passed": true,
+   "detail": "n=14, range -8.16..-6.80"
+  },
+  {
+   "name": "hardness positive",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "dipole non-negative and < 40 D",
+   "passed": true,
+   "detail": "max 31.87 D"
+  },
+  {
+   "name": "Mulliken charges sum to the formal charge",
+   "passed": true,
+   "detail": ""
+  },
+  {
+   "name": "anthraquinone (Mol_4) dipole ~ 0 D by symmetry",
+   "passed": true,
+   "detail": "0.0000 D"
+  },
+  {
+   "name": "anthraquinone (Mol_4) B3LYP gap 3.5-4.8 eV",
+   "passed": true,
+   "detail": "4.187 eV"
+  },
+  {
+   "name": "duplicate 2D structures give distinguishable gaps",
+   "passed": true,
+   "detail": "19 duplicate groups, max gap spread 0.3294 eV, median 0.0040 eV"
+  }
+ ]
+}

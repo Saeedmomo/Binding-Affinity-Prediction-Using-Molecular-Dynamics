@@ -1,0 +1,21 @@
+Descriptor set,Split,n train/test/holdout,PCs retained,Q2 (LOO),Hybrid R2 test,95% CI,Permutation null R2,p (y-scrambling),Leaked test rows
+MD + AlphaFold + MACCS (272),Random,84/25/13,19,0.6647,0.6217,"[-1.59, 0.79]",-0.081 +/- 0.161,0.0099,10
+MD + AlphaFold + MACCS (272),Structure-disjoint,84/25/13,15,0.5779,0.5658,"[-1.33, 0.89]",-0.760 +/- 0.255,0.0099,0
+"MD + AlphaFold + MACCS, outliers removed (272)",Random,80/23/12,15,0.6855,0.5668,"[0.20, 0.76]",-0.235 +/- 0.147,0.0099,5
+"MD + AlphaFold + MACCS, outliers removed (272)",Structure-disjoint,77/24/14,15,0.6597,0.4129,"[-0.04, 0.64]",-0.079 +/- 0.175,0.0099,0
+MD + energetics + ligand-PCA + residue forces (89),Structure-disjoint,84/25/13,19,0.7057,0.7493,"[-0.16, 0.91]",-1.402 +/- 0.453,0.0099,0
+MD + energetics + ligand-PCA + residue forces (89),Random,84/25/13,15,0.7524,0.6354,"[-0.35, 0.72]",-0.087 +/- 0.154,0.0099,10
+MACCS fingerprints only (167),Structure-disjoint,84/25/13,15,0.5784,0.4732,"[-0.92, 0.78]",-0.435 +/- 0.427,0.0099,0
+MACCS fingerprints only (167),Random,84/25/13,15,0.4441,0.4167,"[-1.81, 0.63]",-0.073 +/- 0.155,0.0099,10
+AlphaFold pLDDT/PAE only (16),Structure-disjoint,84/25/13,15,0.4167,0.2979,"[-1.84, 0.58]",-0.075 +/- 0.176,0.0099,0
+AlphaFold pLDDT/PAE only (16),Random,84/25/13,15,0.4225,0.3117,"[-0.68, 0.45]",-0.054 +/- 0.164,0.0099,10
+PaDEL 2D/3D descriptors (1444),Random,84/25/13,15,0.4751,0.5017,"[-0.72, 0.62]",-0.093 +/- 0.114,0.0099,10
+PaDEL 2D/3D descriptors (1444),Structure-disjoint,84/25/13,15,0.4989,0.5595,"[-0.31, 0.84]",-0.157 +/- 0.159,0.0099,0
+MD block + PaDEL block (1549),Structure-disjoint,84/25/13,15,0.5206,0.6161,"[-0.19, 0.85]",-0.157 +/- 0.154,0.0099,0
+MD block + PaDEL block (1549),Random,84/25/13,22,0.523,0.5345,"[-0.41, 0.68]",-0.096 +/- 0.120,0.0099,10
+Pose-derived 3D descriptors (112194),Random,84/25/13,22,0.133,0.0298,"[-2.11, 0.20]",-0.107 +/- 0.090,0.0645,10
+Pose-derived 3D descriptors (112194),Structure-disjoint,84/25/13,22,0.1982,-1.1203,"[-10.44, 0.38]",-0.575 +/- 0.338,0.7742,0
+DFT/xTB quantum descriptors (this work),Random,84/25/13,15,0.1187,0.0598,"[-0.64, 0.29]",-0.080 +/- 0.091,0.0792,10
+DFT/xTB quantum descriptors (this work),Structure-disjoint,84/25/13,15,0.0057,-0.5741,"[-5.43, 0.05]",-0.146 +/- 0.046,0.5446,0
+DFT quantum + MD block (this work),Random,84/25/13,17,0.6637,0.5,"[-2.21, 0.67]",-0.171 +/- 0.182,0.0099,10
+DFT quantum + MD block (this work),Structure-disjoint,84/25/13,19,0.4145,0.1446,"[-4.31, 0.79]",-0.150 +/- 0.196,0.0198,0

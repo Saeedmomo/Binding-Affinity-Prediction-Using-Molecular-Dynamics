@@ -1,0 +1,16 @@
+Descriptor,Unit,Mean,SD,Min,Max,r (pIC50),p,rho (pIC50)
+E(HOMO),eV,-6.184,0.881,-8.164,-1.613,0.179,0.0481,0.278
+E(LUMO),eV,-2.723,0.764,-4.542,1.466,0.247,0.0062,0.3
+HOMO-LUMO gap,eV,3.461,0.59,2.145,5.388,0.052,0.573,0.035
+Ionization potential (Koopmans),eV,6.184,0.881,1.613,8.164,-0.179,0.0481,-0.278
+Electron affinity (Koopmans),eV,2.723,0.764,-1.466,4.542,-0.247,0.0062,-0.3
+"Chemical potential, mu",eV,-4.453,0.77,-6.353,-0.073,0.225,0.0128,0.309
+"Chemical hardness, eta",eV,1.73,0.295,1.073,2.694,0.052,0.573,0.035
+"Softness, S",1/eV,0.596,0.111,0.371,0.932,-0.065,0.474,-0.035
+"Electrophilicity index, omega",eV,5.993,1.831,0.002,12.994,-0.258,0.00405,-0.281
+Dipole moment,D,5.551,6.817,0.0,31.868,0.168,0.065,0.174
+Quadrupole anisotropy,a.u.,115.319,106.735,22.602,589.225,0.126,0.165,0.036
+Most negative Mulliken charge,e,-0.288,0.08,-0.488,-0.134,-0.052,0.571,-0.004
+Most positive Mulliken charge,e,0.24,0.153,0.113,0.957,0.018,0.846,0.14
+Mulliken charge range,e,0.529,0.21,0.275,1.445,0.033,0.721,0.08
+GFN2-xTB solvation free energy (water),Eh,-0.038,0.029,-0.12,-0.011,-0.175,0.0543,-0.131
