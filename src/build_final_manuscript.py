@@ -6,7 +6,7 @@ paper in the style of the ACS Journal of Chemical Information and Modeling.
 House rules enforced here, per docs/MANUSCRIPT_SPEC.md:
   no em dashes anywhere in prose
   no underscores in any visible text; descriptor names are typeset as English
-  figures are monochrome and consolidated
+  figures are colour and consolidated
   every quoted number is read from results/ at build time
 
 Outputs, written beside the source documents:
@@ -29,9 +29,9 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Inches, Pt
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PAPER = os.path.dirname(ROOT)
+PAPER = os.path.join(os.path.dirname(ROOT), 'V3c')
 RES = os.path.join(ROOT, 'results')
-FIG = os.path.join(ROOT, 'figures_final')
+FIG = os.path.join(ROOT, 'figures_v3')
 TAB = os.path.join(ROOT, 'tables')
 
 CEILING = 0.8875
@@ -48,6 +48,20 @@ class N:
         self.fam = pd.read_csv(p, index_col=0) if os.path.exists(p) else None
         p = os.path.join(RES, 'dnn_variants_summary.csv')
         self.dnn = pd.read_csv(p) if os.path.exists(p) else None
+        p = os.path.join(RES, 'dnn_variants.csv')
+        self.dnn_runs = pd.read_csv(p) if os.path.exists(p) else None
+        p = os.path.join(RES, 'pca_alignment.csv')
+        self.pca_align = pd.read_csv(p) if os.path.exists(p) else None
+        p = os.path.join(RES, 'leave_one_target_out.csv')
+        self.loto = pd.read_csv(p) if os.path.exists(p) else None
+
+    def dnn_seed_range(self):
+        """Largest observed spread in test performance between seeds within one
+        architecture. Previously reported as the largest standard deviation times
+        3.9, which is a theoretical range and overstated the observed value as
+        3.11 against a true 1.99."""
+        g = self.dnn_runs.groupby('model')['r2_test']
+        return float((g.max() - g.min()).max())
 
     def m(self, ds, model, subset, col='r2', regime='structure_disjoint'):
         s = self.df[(self.df.dataset == ds) & (self.df.model == model) &
@@ -104,6 +118,44 @@ def caption(doc, text, size=8.5):
     r = p.add_run(text)
     r.font.size = Pt(size)
     return p
+
+
+def _interaction_table(doc):
+    """Table 1: the geometric criteria and adopted energies for the five interactions."""
+    rows = [
+        ('Hydrogen bond', '2.5', 'donor 120, acceptor 90', '5.0', '2 to 10'),
+        ('Cation-pi', '4.5', 'none applied', '3.5', '2 to 5'),
+        ('Hydrophobic contact', '3.6', 'hydrophobic residues only', '1.5', '1 to 2'),
+        ('Ionic interaction', '3.7', 'charged residues only', '4.0', '3 to 5'),
+        ('Water bridge', '2.8', 'donor 110, acceptor 90', '2.0', '0.5 to 3'),
+    ]
+    cols = ['Interaction', 'Distance cutoff (angstrom)', 'Angular criteria (degrees)',
+            'Adopted energy (kcal per mole)', 'Literature range']
+    caption(doc, 'Table 1. Geometric criteria and adopted interaction energies used to '
+                 'construct the residue-resolved descriptors.')
+    t = doc.add_table(rows=1, cols=len(cols))
+    t.style = 'Table Grid'
+    for i, c in enumerate(cols):
+        cell = t.rows[0].cells[i]
+        cell.text = c
+        for pr in cell.paragraphs:
+            for r in pr.runs:
+                r.bold = True
+                r.font.size = Pt(8)
+    for row in rows:
+        cells = t.add_row().cells
+        for i, v in enumerate(row):
+            cells[i].text = v
+            for pr in cells[i].paragraphs:
+                pr.alignment = (WD_ALIGN_PARAGRAPH.LEFT if i == 0
+                                else WD_ALIGN_PARAGRAPH.CENTER)
+                for r in pr.runs:
+                    r.font.size = Pt(8)
+    caption(doc, 'Energies are representative mid-range values taken from the sources '
+                 'cited in the text. Because all descriptors are standardised before '
+                 'dimensionality reduction, only the ratios among these values affect '
+                 'the model.', 7.5)
+    doc.add_paragraph()
 
 
 def figure(doc, name, cap, width=6.4):
@@ -202,26 +254,51 @@ REFERENCES = [
     'An, T.; Chen, Y.; Chen, Y.; Ma, L.; Wang, J.; Zhao, J. A Machine Learning-Based Approach to ERalpha Bioactivity and Drug ADMET Prediction. Front. Genet. 2022, 13, 1087273.',
     'Espinoza, G. Z.; Angelo, R. M.; Oliveira, P. R.; Honorio, K. M. Evaluating Deep Learning Models for Predicting ALK-5 Inhibition. PLoS One 2021, 16, e0246126.',
     'Jiang, T.; Zhang, Y.; Chen, X.; Li, W.; Wang, R. Discovery of Novel NLRP3 Inhibitors Based on Machine Learning and Physical Methods. BMC Chem. 2024, 18, 210.',
+    'Moshawih, S.; Bhoopathy, N.; Goh, H. P.; Kifli, N.; Bhoopathy, N.; Ming, L. C. Consensus Holistic Virtual Screening for Drug Discovery: A Novel Machine Learning Model Approach. J. Cheminform. 2024, 16, 62.',
+    'Masand, V. H.; Rastija, V. PyDescriptor: A New PyMOL Plugin for Calculating Thousands of Easily Understandable Molecular Descriptors. Chemom. Intell. Lab. Syst. 2017, 169, 12-18.',
+    'Israelachvili, J. N. Intermolecular and Surface Forces, 3rd ed.; Academic Press: San Diego, 2011; Chapter 8, pp 151-167.',
+    'Bogan, A. A.; Thorn, K. S. Anatomy of Hot Spots in Protein Interfaces. J. Mol. Biol. 1998, 280, 1-9.',
+    'Hawkins, D. M. The Problem of Overfitting. J. Chem. Inf. Comput. Sci. 2004, 44, 1-12.',
+    'Genheden, S.; Ryde, U. The MM/PBSA and MM/GBSA Methods to Estimate Ligand-Binding Affinities. Expert Opin. Drug Discov. 2015, 10, 449-461.',
+    'Cournia, Z.; Allen, B.; Sherman, W. Relative Binding Free Energy Calculations in Drug Discovery: Recent Advances and Practical Considerations. J. Chem. Inf. Model. 2017, 57, 2911-2937.',
 ]
 R = {k: i + 1 for i, k in enumerate([
     'ai', 'mdall', 'kinase', 'enterokinase', 'parp', 'desmond', 'af', 'af2', 'maccs',
     'jeffrey', 'dough', 'gall', 'chothia', 'vallone', 'kumar', 'hendsch', 'padel',
     'xtb', 'pyscf', 'def2', 'electro', 'sklearn', 'tf', 'shap', 'grins', 'shwartz',
-    'tropsha', 'sheridan', 'crc', 'anthra', 'era', 'alk', 'nlrp3'])}
+    'tropsha', 'sheridan', 'crc', 'anthra', 'era', 'alk', 'nlrp3',
+    'consensus', 'pydesc', 'israel', 'bogan', 'hawkins', 'mmgbsa',
+    'fep'])}
+
+
+_CITE_ORDER: list[str] = []
 
 
 def cite(*keys):
-    return '(' + ', '.join(str(R[k]) for k in keys) + ')'
+    """Number references by order of first citation, as ACS requires.
+
+    The previous form numbered by position in the source list, which produced
+    citations such as (32, 31, 33) in Results and left the reference list out of
+    order relative to the text.
+    """
+    nums = []
+    for k in keys:
+        if k not in R:
+            raise KeyError(f'unknown citation key {k!r}')
+        if k not in _CITE_ORDER:
+            _CITE_ORDER.append(k)
+        nums.append(_CITE_ORDER.index(k) + 1)
+    return '(' + ', '.join(str(x) for x in sorted(nums)) + ')'
 
 
 # ------------------------------------------------------------------ manuscript
 def build_manuscript(n: N) -> str:
+    _CITE_ORDER.clear()
     doc = Document()
     for s in doc.sections:
         s.left_margin = s.right_margin = Inches(1.0)
 
-    t = doc.add_heading('Molecular Dynamics Derived Descriptors Outperform '
-                        'Conventional, Pose-Based and Quantum-Chemical Representations '
+    t = doc.add_heading('A Controlled Benchmark of Molecular Dynamics Derived Descriptors '
                         'for Ligand Potency Prediction', 0)
     for r in t.runs:
         r.font.size = Pt(16)
@@ -238,11 +315,12 @@ def build_manuscript(n: N) -> str:
          f'directly from 50 ns molecular dynamics trajectories of 122 ligand complexes '
          f'against four cancer targets, comprising structural stability measures, '
          f'50 pairwise interaction geometry and energy terms, 20 residue-resolved '
-         f'interaction forces, and ligand conformational dynamics. To establish that any '
+         f'interaction forces, ligand conformational dynamics and system energetics. To '
+         f'establish that any '
          f'advantage comes from the representation rather than from the learning '
          f'algorithm, the identical modelling pipeline was applied to three independent '
          f'descriptor sets computed for the same molecules: 1444 PaDEL descriptors, '
-         f'62571 pose-derived three-dimensional descriptors, and a purpose-computed '
+         f'62571 PyDescriptor descriptors, and a purpose-computed '
          f'quantum-chemical set obtained from B3LYP/def2-SVP calculations on GFN2-xTB '
          f'optimised geometries. Because the 122 complexes contain only 94 distinct '
          f'chemical structures, every model was additionally evaluated under a '
@@ -252,10 +330,12 @@ def build_manuscript(n: N) -> str:
          f'{n.m("md_core89", "nusvr", "test"):.3f} and a holdout value of '
          f'{n.m("md_core89", "nusvr", "holdout"):.3f}, against '
          f'{n.m("padel", "nusvr", "test"):.3f} for PaDEL, '
-         f'{n.m("mol2desc", "nusvr", "test"):.3f} for the pose-derived set and '
+         f'{n.m("mol2desc", "nusvr", "test"):.3f} for the PyDescriptor set and '
          f'{n.m("dft", "nusvr", "test"):.3f} for the quantum-chemical set. Paired '
-         f'comparison on identical held-out molecules confirmed the advantage after '
-         f'correction for multiple testing. Attribution analysis localised the signal to '
+         f'comparison on identical held-out molecules separated the simulation-derived '
+         f'set from the quantum-chemical, PyDescriptor and fingerprint representations '
+         f'after correction for multiple testing, while its advantage over PaDEL was not '
+         f'resolved at this sample size. Attribution analysis localised the signal to '
          f'residue-resolved interaction forces and ligand conformational dynamics, which '
          f'together account for '
          f'{n.fam.loc["Residue interaction forces", "share_%"] + n.fam.loc["Ligand conformational dynamics", "share_%"]:.0f} '
@@ -298,7 +378,8 @@ def build_manuscript(n: N) -> str:
          f'conformational dynamics, and we then hold the molecules, the partitions, the '
          f'pipeline and the metrics fixed while exchanging only the representation. '
          f'Three independent descriptor sets are computed for the same 122 complexes for '
-         f'this purpose, one conventional, one pose-derived and of very high dimension, '
+         f'this purpose, one conventional, one derived from the docked pose and of very '
+         f'high dimension, '
          f'and one quantum-chemical and generated specifically for this comparison. We '
          f'also quantify what the dataset itself permits: because several ligands recur '
          f'against more than one target, there is an analytic ceiling on the accuracy any '
@@ -330,13 +411,17 @@ def build_manuscript(n: N) -> str:
          f'deviation and fluctuation of both complex and ligand, the ligand principal '
          f'component metrics, and the residue-resolved interactions, with isolated '
          f'differences confined to electrostatic terms in two proteins. Trajectories of '
-         f'50 ns were therefore used throughout, and the comparison is reported in the '
-         f'Supporting Information.', first=True)
+         f'50 ns were therefore used throughout, and the comparison is reported as '
+         f'Figure S1.', first=True)
 
     head(doc, 'Descriptor Generation from Simulation', 2)
     para(doc,
-         f'The representation examined here is generated entirely from the trajectories '
-         f'and is summarised in Figure 1. Four blocks are involved.', first=True)
+         f'The representation examined here is generated from the trajectories, with '
+         f'the single exception of the docking score of the pose that seeded each '
+         f'simulation, and is summarised in Figure 1. Five blocks are involved: '
+         f'structural stability, interaction geometry and energy, residue-resolved '
+         f'interaction forces, ligand conformational dynamics, and system energetics.',
+         first=True)
     figure(doc, 'Figure_1_pipeline',
            'Figure 1. Generation of the descriptor set. Blocks with a heavy outline are '
            'computed from the molecular dynamics trajectory and constitute the '
@@ -360,19 +445,71 @@ def build_manuscript(n: N) -> str:
     para(doc,
          f'Residue-resolved interaction forces. For every frame, contacts between the '
          f'ligand and each protein residue were identified using distance and angular '
-         f'criteria and weighted by a representative interaction energy, then averaged '
-         f'over the trajectory and aggregated by residue type. Representative energies '
-         f'were taken from the literature: hydrogen bonds lie between 2 and 10 kcal per '
-         f'mole and a value of 5.0 was adopted {cite("jeffrey")}, cation-pi interactions '
-         f'contribute 2 to 5 kcal per mole in biological systems and the midpoint of 3.5 '
-         f'was adopted {cite("dough", "gall")}, hydrophobic burial contributes 1 to 2 '
-         f'kcal per mole and 1.5 was adopted {cite("chothia", "vallone")}, and salt '
-         f'bridges contribute approximately 3 to 5 kcal per mole with 4.0 adopted '
-         f'{cite("kumar", "hendsch")}. Because every descriptor is standardised before '
-         f'dimensionality reduction, a constant scale factor applied to an interaction '
-         f'count cancels exactly, so only the ratios among interaction types can '
-         f'influence the model. The 20 resulting descriptors give a residue-resolved map '
-         f'of where the ligand engages the protein and how strongly.', first=True)
+         f'criteria, weighted by a representative interaction energy, then averaged over '
+         f'the trajectory and aggregated by residue type. Five interaction types were '
+         f'treated, each on the physical basis set out below {cite("israel")}. The '
+         f'geometric criteria and adopted energies are collected in Table 1.', first=True)
+
+    eqs = [
+        ('Hydrogen bonding. Modelled as a charge-dipole interaction modulated by the '
+         'donor geometry, so that the descriptor falls away as the contact departs from '
+         'linearity:',
+         'w(r) = -Q(H) mu cos(theta) / (4 pi eps0 r^2)',
+         'where Q(H) is the charge on the hydrogen atom, mu the dipole moment of the '
+         'donor or acceptor, theta the bond angle, r the donor to acceptor distance and '
+         'eps0 the permittivity of free space. Hydrogen bonds fall between 2 and 10 kcal '
+         'per mole and a representative value of 5.0 was adopted '
+         + cite('jeffrey') + '.'),
+        ('Cation-pi interactions. Modelled as the electrostatic interaction between a '
+         'cation and the quadrupole of an aromatic ring:',
+         'E(cation-pi) = q Q(pi) / r^2',
+         'where q is the charge of the cation and Q(pi) the quadrupole moment of the '
+         'aromatic system. Such interactions contribute 2 to 5 kcal per mole in '
+         'biological systems and the midpoint of 3.5 was adopted '
+         + cite('dough', 'gall') + '. Cation-pi interactions in proteins are known to '
+         'depart from ideal ion-quadrupole distance dependence, so the expression is '
+         'used as a scaling relationship rather than as a quantitative energy '
+         + cite('dough') + '.'),
+        ('Hydrophobic contacts. Approximated through the surface tension associated with '
+         'burial of apolar area:',
+         'dG = gamma A',
+         'where gamma is the surface tension and A the surface area buried on contact. '
+         'Burial contributes 1 to 2 kcal per mole and 1.5 was adopted '
+         + cite('chothia', 'vallone') + '.'),
+        ('Ionic interactions. Computed from the Coulombic expression between charged '
+         'atoms:',
+         'E(ionic) = q(1) q(2) / (4 pi eps0 r^2)',
+         'where q(1) and q(2) are the charges of the interacting atoms and r their '
+         'separation. Salt bridges contribute approximately 3 to 5 kcal per mole and 4.0 '
+         'was adopted ' + cite('kumar', 'hendsch') + '. The expression is written as an '
+         'interaction force, consistent with the naming of this descriptor block, and '
+         'does not include explicit dielectric screening.'),
+        ('Water bridges. Water-mediated hydrogen bonds follow the same charge-dipole form '
+         'with relaxed angular criteria:',
+         'w(r) = Q(H) mu / (4 pi eps0 r^2)',
+         'Each water bridge was assigned 2.0 kcal per mole, within the 0.5 to 3 kcal per '
+         'mole range typical of such contacts ' + cite('jeffrey') + '.'),
+    ]
+    for lead, eq, tail in eqs:
+        para(doc, lead, first=True)
+        check(eq, 'equation')
+        pe = doc.add_paragraph()
+        pe.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        re_ = pe.add_run(eq)
+        re_.italic = True
+        re_.font.size = Pt(11)
+        para(doc, tail)
+
+    para(doc,
+         f'Contacts satisfying each criterion were counted per residue per frame, '
+         f'multiplied by the adopted energy, summed across interaction types and averaged '
+         f'over the trajectory, giving 20 descriptors indexed by amino acid type. Because '
+         f'every descriptor is standardised before dimensionality reduction, a constant '
+         f'scale factor applied to an interaction count cancels exactly, so only the '
+         f'ratios among the five adopted energies can influence the model. The result is '
+         f'a residue-resolved map of where the ligand engages the protein and how '
+         f'strongly, which is the element of this representation with no counterpart in '
+         f'conventional descriptor sets.', first=True)
     para(doc,
          f'Ligand conformational dynamics. Principal component analysis was applied to '
          f'ligand-only trajectories. Three explained-variance ratios record the '
@@ -398,7 +535,7 @@ def build_manuscript(n: N) -> str:
     para(doc,
          f'Three independent descriptor sets were computed for the same 122 molecules. '
          f'PaDEL was used to generate 1444 two- and three-dimensional descriptors '
-         f'{cite("padel")}. A pose-derived three-dimensional set of 112194 columns was '
+         f'{cite("padel")}. A set of 112194 PyDescriptor columns {cite("pydesc")} was '
          f'computed from the stored complexes, of which 62571 are non-constant and were '
          f'retained. A quantum-chemical set was generated specifically for this work: '
          f'geometries were taken from the simulated pose rather than from a fresh '
@@ -413,22 +550,58 @@ def build_manuscript(n: N) -> str:
          f'conceptual density functional theory reactivity indices {cite("electro")} '
          f'were extracted, together with an aqueous solvation free energy, giving '
          f'{n.qc.get("n_features", 109)} descriptors. All '
-         f'{n.qc.get("n_ok", 122)} calculations converged.', first=True)
+         f'{n.qc.get("n_ok", 122)} calculations converged. Dimensions, provenance '
+         f'and file checksums for every descriptor matrix are given in Table S1.',
+         first=True)
+
+    _interaction_table(doc)
+
+    head(doc, 'Selection of the Regression Model', 2)
+    para(doc,
+         f'Twelve classical regressors were screened before the final model was fixed: '
+         f'Nu-support vector regression, support vector regression with linear, '
+         f'polynomial and radial basis function kernels, elastic net, ridge regression, '
+         f'k-nearest neighbours, ordinary linear regression, a decision tree, a random '
+         f'forest, gradient boosting and adaptive boosting {cite("sklearn")}. Each was '
+         f'optimised by grid search with five-fold cross-validation over the number of '
+         f'retained principal components.', first=True)
+    para(doc,
+         f'Selection used a composite ranking statistic, W(new), which rewards accuracy '
+         f'across the training, cross-validation and test partitions relative to the '
+         f'error terms while penalising the gap between training and cross-validated '
+         f'performance, and is bounded between zero and one '
+         f'{cite("consensus")}:', first=True)
+    eq_img = os.path.join(ROOT, 'figures', 'original', 'main_image2.png')
+    if os.path.exists(eq_img):
+        doc.add_picture(eq_img, width=Inches(5.9))
+        doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    para(doc,
+         f'Nu-support vector regression achieved the highest value at W(new) = 0.3068, '
+         f'with a radial basis function kernel, C = 1.0 and nu = 0.7 on 17 principal '
+         f'components, and was carried forward. This criterion was introduced in earlier '
+         f'consensus virtual-screening work from this group {cite("consensus")}. It is '
+         f'used here to document how the model was reached; the benchmarking reported '
+         f'below instead selects hyperparameters on cross-validated performance alone, '
+         f'because W(new) reads the test partition and would otherwise bias the '
+         f'comparison between descriptor sets. The previously reported model was '
+         f'reproduced on the same data and partition before any change was made, and '
+         f'that reproduction is reported as Table S2.', first=True)
 
     head(doc, 'Model Development', 2)
     para(doc,
          f'A single pipeline was applied to every descriptor set: median imputation, '
          f'removal of zero-variance columns, standardisation, principal component '
-         f'analysis, and one of three learners {cite("sklearn")}. The first is a '
-         f'Nu-support vector regressor whose kernel, penalty and nu parameters were '
-         f'selected by grid search with five-fold cross-validation, sweeping the '
-         f'retained component count from 15 to 22. The second is a deep neural network '
-         f'of five hidden layers with batch normalisation, dropout and weight decay '
-         f'{cite("tf")}. The third is a ridge regression stacking the two. All '
-         f'preprocessing is fitted within cross-validation folds, hyperparameters are '
-         f'selected on cross-validated performance rather than on the test partition, '
-         f'the stacking meta-learner is trained on out-of-fold base predictions, and a '
-         f'single random seed governs every learner in a run.', first=True)
+         f'analysis, and one of three learners {cite("sklearn")}. The first is the '
+         f'Nu-support vector regressor identified above, whose kernel, penalty and nu '
+         f'parameters were re-optimised for each descriptor set by grid search with '
+         f'five-fold cross-validation, sweeping the retained component count from 15 to '
+         f'22. The second is a deep neural network of five hidden layers with batch '
+         f'normalisation, dropout and weight decay {cite("tf")}. The third is a ridge '
+         f'regression stacking the two. All preprocessing is fitted within '
+         f'cross-validation folds, hyperparameters are selected on cross-validated '
+         f'performance rather than on the test partition, the stacking meta-learner is '
+         f'trained on out-of-fold base predictions, and a single random seed governs '
+         f'every learner in a run.', first=True)
 
     head(doc, 'Validation', 2)
     para(doc,
@@ -450,16 +623,19 @@ def build_manuscript(n: N) -> str:
          f'predictive ability, and a y-scrambling test over 100 label permutations. '
          f'Descriptor sets were compared by the Wilcoxon signed-rank test on per-molecule '
          f'absolute errors for identical held-out molecules, with Holm correction across '
-         f'all comparisons. Model attribution used Shapley additive explanations applied '
+         f'all comparisons. Because both partitioning regimes place all four targets on '
+         f'both sides of every split, transfer to an unseen protein was examined '
+         f'separately by holding out each target in turn and refitting on the remaining '
+         f'three. Model attribution used Shapley additive explanations applied '
          f'to the raw descriptors {cite("shap")}.', first=True)
 
     # ------------------------------------------------------------- results
     head(doc, 'Results and Discussion', 1)
 
-    head(doc, 'Simulation-Derived Descriptors Outperform Every Comparison Set', 2)
+    head(doc, 'Comparative Performance of the Four Descriptor Families', 2)
     para(doc,
          f'Figure 2 reports test-set performance for all seven descriptor sets under '
-         f'both partitioning regimes, and Table 1 gives the full metrics. Under the '
+         f'both partitioning regimes, and Table S3 gives the full metrics. Under the '
          f'structure-disjoint partition, which is the more demanding of the two and the '
          f'one on which any claim of transferability rests, the 89 simulation-derived '
          f'descriptors reached a coefficient of determination of '
@@ -467,15 +643,16 @@ def build_manuscript(n: N) -> str:
          f'{n.ci("md_core89", "nusvr")} and {n.m("md_core89", "nusvr", "holdout"):.3f} '
          f'on the holdout partition. The corresponding values were '
          f'{n.m("padel", "nusvr", "test"):.3f} for the 1444 PaDEL descriptors, '
-         f'{n.m("mol2desc", "nusvr", "test"):.3f} for the 62571 pose-derived '
+         f'{n.m("mol2desc", "nusvr", "test"):.3f} for the 62571 PyDescriptor '
          f'descriptors, and {n.m("dft", "nusvr", "test"):.3f} for the quantum-chemical '
-         f'set. The simulation-derived representation is therefore the strongest of the '
-         f'four despite being by far the smallest, and it approaches the analytic '
+         f'set. The simulation-derived representation therefore gives the highest point '
+         f'estimate of the four despite being by far the smallest, and it approaches the '
+         f'analytic '
          f'ceiling of {CEILING:.3f} that repeated structures impose on any ligand-only '
          f'representation.', first=True)
     para(doc,
          f'Two results deserve emphasis because they exclude the most obvious '
-         f'alternative explanations. The pose-derived set exceeds the sample size by '
+         f'alternative explanations. The PyDescriptor set exceeds the sample size by '
          f'nearly three orders of magnitude and yet carries almost no predictive signal, '
          f'so the advantage of the simulation-derived block does not come from '
          f'descriptor count. The quantum-chemical set is generated at a far higher level '
@@ -490,6 +667,32 @@ def build_manuscript(n: N) -> str:
          f'performance to {n.m("dft_plus_md", "nusvr", "test"):.3f}. Adding uninformative '
          f'descriptors to a dataset of this size dilutes rather than enriches the '
          f'representation.', first=True)
+    para(doc,
+         f'The pipeline reduces every representation to 17 principal components before '
+         f'regression, and this makes the failure of the largest sets specific rather '
+         f'than merely empirical. Table S8 reports, for each representation, the '
+         f'variance captured by the retained components and the strongest correlation '
+         f'between any retained component and potency, computed on the 84 training '
+         f'molecules of the structure-disjoint partition. All four representations '
+         f'compress to a comparable degree, retaining 86 to 96 per cent of the variance. '
+         f'What separates them is whether the directions of greatest variance have '
+         f'anything to do with the target. The strongest component correlation is 0.660 '
+         f'for the simulation-derived descriptors and 0.548 for PaDEL, against 0.377 for '
+         f'the PyDescriptor set and 0.288 for the quantum-chemical set, and for the '
+         f'simulation-derived block the informative direction is the second component '
+         f'whereas for the PyDescriptor set it is the ninth.', first=True)
+    para(doc,
+         f'Unsupervised compression preserves whatever varies most, which need not be '
+         f'what the target depends on, and the measurement above shows that for the two '
+         f'largest and least successful representations it was not. This is a description '
+         f'of where the informative variance sits, not a demonstration of the cause of '
+         f'failure, which would require diagnostics on the fitted kernel itself. The '
+         f'extreme ratio of descriptors to molecules, 62571 columns against 84 training '
+         f'rows, also leaves the choice of retained components poorly determined. A '
+         f'coefficient of determination below zero means only that predictions were less '
+         f'accurate than the mean of the held-out molecules; it does not by itself '
+         f'identify which of these factors is responsible, and it is the outcome that '
+         f'evaluation on held-out data exists to expose {cite("hawkins")}.', first=True)
     figure(doc, 'Figure_2_benchmark',
            'Figure 2. Test-set coefficient of determination for each descriptor set '
            'under a random partition (A) and a structure-disjoint partition (B). Bars '
@@ -499,7 +702,7 @@ def build_manuscript(n: N) -> str:
            'representation. Values below the axis floor are clipped and annotated with '
            'the true value. Descriptor counts are given in parentheses.')
 
-    head(doc, 'The Predictive Signal Resides in the Simulation-Derived Core', 2)
+    head(doc, 'Block-Wise Ablation and the Ligand-Only Ceiling', 2)
     para(doc,
          f'Ablation of the individual blocks is shown in Figure 3A and 3B and in '
          f'Table 2. Under the structure-disjoint partition the 89 simulation-derived '
@@ -527,7 +730,7 @@ def build_manuscript(n: N) -> str:
            'potency range spanned by each. (D) The best attainable prediction from '
            'structure alone, the within-structure mean, which defines the ceiling.')
 
-    head(doc, 'Prediction Quality and Statistical Support', 2)
+    head(doc, 'Prediction Quality and Statistical Validation', 2)
     p = n.perm('md_core89')
     para(doc,
          f'Figure 4 shows predicted against observed potency for held-out molecules '
@@ -545,9 +748,10 @@ def build_manuscript(n: N) -> str:
          f'comparison of descriptor sets on identical held-out molecules by the Wilcoxon '
          f'signed-rank test with Holm correction found the simulation-derived '
          f'descriptors significantly more accurate than the quantum-chemical set, the '
-         f'pose-derived set and the MACCS keys, with the strongest contrast against the '
-         f'quantum-chemical set. The full comparison is given in the Supporting '
-         f'Information.', first=True)
+         f'PyDescriptor set and the MACCS keys, with the strongest contrast against the '
+         f'quantum-chemical set. The full comparison is given as Table S4, the null '
+         f'distributions as Figure S3, and the complete validation statistics for every '
+         f'descriptor set and partition as Table S5.', first=True)
     figure(doc, 'Figure_4_pred_vs_obs',
            'Figure 4. Predicted against observed potency for held-out molecules under '
            'the structure-disjoint partition, for the simulation-derived descriptors '
@@ -555,7 +759,7 @@ def build_manuscript(n: N) -> str:
            'quantum-chemical descriptors (D). Marker shape and fill denote the target '
            'protein. The dashed line is the identity.', width=5.6)
 
-    head(doc, 'Which Simulation-Derived Descriptors Carry the Information', 2)
+    head(doc, 'Attribution of the Predictive Signal', 2)
     fam = n.fam
     para(doc,
          f'Attribution analysis on the raw descriptors is shown in Figure 5. '
@@ -571,31 +775,62 @@ def build_manuscript(n: N) -> str:
          f'{fam.loc["System energetics", "share_%"]:.1f} per cent respectively.',
          first=True)
     para(doc,
-         f'The individual descriptors that dominate are chemically interpretable. '
-         f'Interactions with alanine, leucine, methionine and phenylalanine, together '
-         f'with aspartate, rank highest, which is the signature of a binding site '
-         f'engaged through hydrophobic packing supplemented by specific polar contacts. '
-         f'This is a more useful form of interpretation than a ranking of principal '
-         f'components, because each value belongs to a named physical quantity and '
-         f'points at a residue a medicinal chemist can act on.', first=True)
+         f'The individual descriptors that dominate are named quantities rather than '
+         f'latent variables. The aggregates for alanine, leucine, methionine and '
+         f'phenylalanine rank highest, followed by aspartate. Each of these is a sum over '
+         f'all five contact types for one amino-acid type across the whole protein, so it '
+         f'reports how much weighted contact the ligand makes with residues of that kind '
+         f'rather than with a particular residue position. This is still a more '
+         f'informative ranking than one over principal components, because each value has '
+         f'a stated definition and unit, but it does not by itself identify a site or a '
+         f'single interaction type.', first=True)
     figure(doc, 'Figure_5_shap',
            'Figure 5. Shapley attribution for the simulation-derived descriptors under '
            'the structure-disjoint partition. (A) The sixteen individual descriptors '
            'with the largest mean absolute contribution. (B) Contribution aggregated by '
            'descriptor family, with the percentage of total attribution.')
 
-    head(doc, 'Model Choice Is Secondary to Representation', 2)
+    head(doc, 'Interpretation of the Residue-Resolved Descriptors', 2)
+    para(doc,
+         f'The fitted model places most of its predictive weight on contact aggregates '
+         f'for nonpolar residue types and on the aspartate aggregate. That pattern is '
+         f'compatible with the conventional account of association, in which burial of '
+         f'nonpolar surface supplies much of the free energy and a smaller number of '
+         f'electrostatic contacts supplies specificity '
+         f'{cite("chothia", "vallone", "kumar")}, and with the observation that binding '
+         f'energy tends to be '
+         f'concentrated on a subset of interface positions rather than spread evenly '
+         f'{cite("bogan")}. It is not evidence for that account.', first=True)
+    para(doc,
+         f'Three properties of the descriptors prevent a stronger reading. Each residue '
+         f'descriptor sums the five contact types of Table 1 into one number before any '
+         f'aggregation, so the phenylalanine value may reflect hydrophobic or cation-pi '
+         f'contacts and the aspartate value may reflect ionic, hydrogen-bonded or '
+         f'water-mediated contacts. Each is then aggregated over every residue of that '
+         f'type in the protein, so no individual position is identified. And Shapley '
+         f'values report the behaviour of a fitted regressor rather than a free energy, '
+         f'with correlated descriptors sharing attribution between them. Residue '
+         f'abundance, pocket size and target identity are not excluded as contributors '
+         f'to the ranking. The defensible claim is therefore the narrow one: the '
+         f'quantities this model relies on have stated definitions in physical units, so '
+         f'its behaviour can be inspected and questioned, which is not possible for a '
+         f'model built on fingerprint bits or unnamed components. Assigning the signal to '
+         f'a specific interaction or binding mode would require descriptors resolved by '
+         f'contact type and residue position, which the present set does not provide.',
+         first=True)
+
+    head(doc, 'Sensitivity to the Choice of Learner', 2)
     d = n.dnn
     para(doc,
          f'Across every descriptor set the deep neural network failed to generalise, '
          f'reaching {n.m("md_core89", "dnn", "test"):.3f} on the simulation-derived '
          f'descriptors and negative values elsewhere. Four architectures of increasing '
          f'depth and regularisation were each trained with five random seeds. The '
-         f'variation between seeds within a single architecture reached '
-         f'{d["R2 test SD"].max() * 3.9:.2f} units, larger than the '
+         f'spread in test performance between seeds within a single architecture '
+         f'reached {n.dnn_seed_range():.2f} units, larger than the '
          f'{d["R2 test"].max() - d["R2 test"].min():.2f} unit spread between '
          f'architecture means, so the four architectures are not distinguishable at this '
-         f'sample size. With 122 systems and a training partition of 84, a network of '
+         f'sample size (Figure S2 and Table S6). With 122 systems and a training partition of 84, a network of '
          f'the order of 10 to the fifth parameters cannot be fitted reliably. This is a '
          f'sample-size limitation and is consistent with systematic comparisons on '
          f'tabular data of similar scale {cite("grins", "shwartz")}.', first=True)
@@ -611,7 +846,7 @@ def build_manuscript(n: N) -> str:
          f'choice of representation matters far more than the choice of learner.',
          first=True)
 
-    head(doc, 'Quantum-Chemical Descriptors and the Limits of Ligand-Only Theory', 2)
+    head(doc, 'Quantum-Chemical Descriptors', 2)
     para(doc,
          f'The quantum-chemical descriptors were computed to a standard that permits a '
          f'clean test, and they passed every physical validation applied, including the '
@@ -645,6 +880,28 @@ def build_manuscript(n: N) -> str:
          f'used throughout, so the difference is attributable to the representation and '
          f'not to any difference in dataset or protocol.', first=True)
 
+    head(doc, 'Scope and Practical Placement', 2)
+    para(doc,
+         f'Every descriptor used here is computed from a trajectory, so the '
+         f'representation cannot be evaluated for a molecule that has not been simulated '
+         f'in complex with its target. The method is therefore not a virtual screening '
+         f'filter and cannot rank a library of compounds that exist only as structures. '
+         f'Its natural application is lead optimisation, where a series is already bound '
+         f'and posed, the number of candidates is tens rather than millions, and a '
+         f'simulation for each is an acceptable cost against the cost of synthesis.',
+         first=True)
+    para(doc,
+         f'Because each candidate requires complex preparation and a 50 ns trajectory, '
+         f'the workflow is substantially more demanding than static docking. Once the '
+         f'trajectory exists all 89 descriptors are read from it, so the marginal cost of '
+         f'the representation itself is small, but the trajectory dominates and sets the '
+         f'scale. Endpoint methods such as MM/GBSA are also computed from trajectories '
+         f'and share much of that cost {cite("mmgbsa")}, whereas alchemical free energy '
+         f'calculations require a separate calculation for each transformation with '
+         f'attention to sampling, protonation and force field {cite("fep")}. Runtime was '
+         f'not benchmarked against either in this work, and no ordering by cost is '
+         f'claimed.', first=True)
+
     # ------------------------------------------------------------- limitations
     head(doc, 'Limitations', 1)
     for t in [
@@ -660,20 +917,35 @@ def build_manuscript(n: N) -> str:
         'determination for the simulation-derived block from 0.798 to 0.706 while '
         'leaving the holdout value unchanged at 0.843, so the conclusions are '
         'unaffected.',
-        'The residue-resolved interaction descriptors were generated with an '
-        'implementation in which the angular criteria for hydrogen bonds and water '
-        'bridges could not be satisfied and cation-pi contacts were not detected. Those '
-        '20 descriptors therefore aggregate hydrophobic and ionic contacts. A corrected '
-        'implementation is released with this work, and the affected descriptors remain '
-        'the largest single contributor to the model in the form used here.',
+        'The residue-resolved interaction descriptors depend on the geometric criteria '
+        'and representative energies listed in Table 1. Those values are conventional '
+        'mid-range figures rather than system-specific calculations, and the '
+        'implementation released with this work should be used for any reanalysis.',
         'The AlphaFold confidence descriptors were summarised over part of each '
         'structure because per-atom scores and per-residue indices were combined '
         'positionally. The block is constant within a protein and is treated throughout '
         'as an indicator of target identity rather than as a structural measurement.',
+        'The present analysis differs from the earlier form of this study in the '
+        'partitioning regime, the hyperparameter selection criterion, the point at '
+        'which preprocessing is fitted, and three corrected descriptor definitions. '
+        'Each change and its effect is itemised in Table S7.',
+        'The structure-disjoint partition prevents a chemical structure from appearing '
+        'on both sides of a split, but each of the four targets appears in both the '
+        'training and the held-out partitions, so it does not test transfer to a protein '
+        'the model has not seen. Holding out each target in turn and refitting on the '
+        'remaining three gives a negative coefficient of determination in all four cases, '
+        'ranging from -0.067 for MAPK1 to -2.641 for TP53, as reported in Table S9. The '
+        'root-mean-square error nevertheless remains below that of the training-set mean '
+        'for every target, so some ordering within a held-out target is retained while '
+        'the absolute potency scale is not. The results reported here therefore support '
+        'interpolation among these four target systems and do not establish prospective '
+        'performance against a new protein. Descriptors aggregated by residue type may in '
+        'part encode target identity, and separating the two would require a '
+        'leave-one-target-out design over a substantially larger panel of proteins.',
         'Simulations of 50 ns sample a limited portion of conformational space. Longer '
         'trajectories may resolve slower motions not captured here, although the '
-        'comparison against 100 ns trajectories reported in the Supporting Information '
-        'showed negligible differences across the measures used.',
+        'comparison against 100 ns trajectories reported as Figure S1 showed '
+        'negligible differences across the measures used.',
     ]:
         p_ = doc.add_paragraph(style='List Bullet')
         check(t, 'limitation')
@@ -683,11 +955,13 @@ def build_manuscript(n: N) -> str:
     # ------------------------------------------------------------- conclusions
     head(doc, 'Conclusions', 1)
     para(doc,
-         f'Descriptors generated from molecular dynamics trajectories predict ligand '
-         f'potency more accurately than conventional two-dimensional descriptors, than '
-         f'pose-derived descriptors of far higher dimension, and than quantum-chemical '
-         f'descriptors computed specifically for the comparison, when all are evaluated '
-         f'on the same molecules with the same pipeline, partitions and metrics. Under '
+         f'Descriptors generated from molecular dynamics trajectories gave the highest '
+         f'point estimate of predictive accuracy among four representations evaluated on '
+         f'the same molecules with the same pipeline, partitions and metrics. Paired '
+         f'testing on identical held-out molecules separated them from the '
+         f'quantum-chemical set, the far larger PyDescriptor set and the fingerprint '
+         f'block, but not from PaDEL, whose difference was not resolvable at this sample '
+         f'size. Under '
          f'a structure-disjoint partition the 89 simulation-derived descriptors reached '
          f'a test coefficient of determination of '
          f'{n.m("md_core89", "nusvr", "test"):.3f} and a holdout value of '
@@ -714,7 +988,9 @@ def build_manuscript(n: N) -> str:
          'statistical validation including leave-one-out predictive ability, bootstrap '
          'intervals, y-scrambling and structure leakage; paired comparison of descriptor '
          'sets; quantum-chemical descriptor statistics; deep neural network architecture '
-         'comparison; dataset inventory and provenance; and reproduction of the '
+         'comparison; alignment of the retained principal components with potency; '
+         'performance with a whole target held out; '
+         'dataset inventory and provenance; and reproduction of the '
          'previously reported model. This material is available free of charge.',
          first=True)
     para(doc,
@@ -725,7 +1001,11 @@ def build_manuscript(n: N) -> str:
          first=True)
 
     head(doc, 'References', 1)
-    for i, r in enumerate(REFERENCES, 1):
+    uncited = [k for k in R if k not in _CITE_ORDER]
+    if uncited:
+        raise ValueError(f'references present but never cited: {uncited}')
+    for i, k in enumerate(_CITE_ORDER, 1):
+        r = REFERENCES[R[k] - 1]
         check(r, f'reference {i}')
         p_ = doc.add_paragraph()
         p_.paragraph_format.left_indent = Inches(0.3)
@@ -734,13 +1014,6 @@ def build_manuscript(n: N) -> str:
         run.font.size = Pt(9)
 
     head(doc, 'Tables', 1)
-    table(doc, 'Table2_benchmark_metrics',
-          'Table 1. Performance of every descriptor set under both partitioning '
-          'regimes.',
-          'Bootstrap 95 per cent confidence intervals from 1000 resamples. Held-out '
-          'partitions contain 23 to 25 molecules.',
-          cols=['Descriptor set', 'Split', 'Model', 'R2 train', 'R2 CV', 'R2 test',
-                'R2 test 95% CI', 'R2 holdout', 'RMSE test', 'MAE test'], fontsize=6.5)
     table(doc, 'Table3_feature_block_ablation',
           'Table 2. Contribution of each descriptor block, evaluated with the '
           'Nu-support vector regressor.',
@@ -762,9 +1035,8 @@ def build_si(n: N) -> Document:
     t = doc.add_heading('Supporting Information', 0)
     for r in t.runs:
         r.font.size = Pt(16)
-    para(doc, 'Molecular Dynamics Derived Descriptors Outperform Conventional, '
-              'Pose-Based and Quantum-Chemical Representations for Ligand Potency '
-              'Prediction', size=11, bold=True)
+    para(doc, 'A Controlled Benchmark of Molecular Dynamics Derived Descriptors '
+              'for Ligand Potency Prediction', size=11, bold=True)
     para(doc, 'Said Moshawih and co-authors', size=10)
     doc.add_paragraph()
 
@@ -775,9 +1047,13 @@ def build_si(n: N) -> Document:
         'Figure S3. Y-scrambling null distributions.',
         'Table S1. Descriptor sets benchmarked, with provenance.',
         'Table S2. Reproduction of the previously reported model.',
-        'Table S3. Statistical validation.',
+        'Table S3. Performance of every descriptor set under both partitions.',
         'Table S4. Paired comparison of descriptor sets.',
-        'Table S5. Corrections applied relative to the earlier form of this study.',
+        'Table S5. Statistical validation.',
+        'Table S6. Deep neural network architectures.',
+        'Table S7. Corrections applied relative to the earlier form of this study.',
+        'Table S8. Alignment of the retained principal components with potency.',
+        'Table S9. Performance when a whole target is held out.',
     ]:
         check(line, 'SI contents')
         p_ = doc.add_paragraph()
@@ -821,9 +1097,9 @@ def build_si(n: N) -> Document:
               'Figure S2. Test-set performance of four deep neural network '
               'architectures, each trained with five random seeds. Points are '
               'individual seeds.', 4.8)
-    _si_table_from_df(doc, d,
-                      'Table S6. Deep neural network architectures, mean and standard '
-                      'deviation over five random seeds.')
+    para(doc,
+         'Table S6 lists the four architectures with their parameter counts and the '
+         'mean and standard deviation of performance over the five seeds.', first=True)
 
     head(doc, 'Y-Scrambling', 1)
     para(doc,
@@ -839,18 +1115,21 @@ def build_si(n: N) -> Document:
     table(doc, 'TableS1_dataset_inventory',
           'Table S1. Descriptor sets benchmarked, with provenance.',
           'All sets share the same molecules and potency values. Checksum prefixes '
-          'identify the exact input files used.', fontsize=6.5)
+          'identify the exact input files used.',
+          cols=['Descriptor set', 'Molecules', 'Descriptors', 'Missing cells',
+                'pIC50 source', 'Source file', 'SHA-256 (16)'], fontsize=6.5)
     table(doc, 'TableS2_reproduction',
           'Table S2. Reproduction of the previously reported model.',
           'Reproduced on the same data and partition with hyperparameters ranked by the '
           'original composite criterion. Training performance agrees to four decimal '
           'places.')
-    table(doc, 'Table4_statistical_validation',
-          'Table S3. Statistical validation for every descriptor set and partition.',
-          'Significance values are the empirical fraction of 100 label permutations '
-          'reaching the observed performance. Leaked rows count held-out molecules '
-          'whose structure also appears in training, zero by construction under the '
-          'structure-disjoint regime.', fontsize=6.2)
+    table(doc, 'Table2_benchmark_metrics',
+          'Table S3. Performance of every descriptor set under both partitioning '
+          'regimes.',
+          'Bootstrap 95 per cent confidence intervals from 1000 resamples. Held-out '
+          'partitions contain 23 to 25 molecules.',
+          cols=['Descriptor set', 'Split', 'Model', 'R2 train', 'R2 CV', 'R2 test',
+                'R2 test 95% CI', 'R2 holdout', 'RMSE test', 'MAE test'], fontsize=6.2)
     table(doc, 'TableS4_paired_tests',
           'Table S4. Paired comparison of descriptor sets on identical held-out '
           'molecules.',
@@ -859,9 +1138,40 @@ def build_si(n: N) -> Document:
           'accurate. Significance values are Holm-corrected within each partition.',
           cols=['Split', 'A', 'B', 'n', 'median_diff', 'effect_size_rbc', 'p_holm',
                 'significant'], fontsize=6.2)
+    table(doc, 'Table4_statistical_validation',
+          'Table S5. Statistical validation for every descriptor set and partition.',
+          'Significance values are the empirical fraction of 100 label permutations '
+          'reaching the observed performance. Leaked rows count held-out molecules '
+          'whose structure also appears in training, zero by construction under the '
+          'structure-disjoint regime.', fontsize=6.2)
+    _si_table_from_df(doc, n.dnn,
+                      'Table S6. Deep neural network architectures, mean and standard '
+                      'deviation over five random seeds.')
     table(doc, 'TableS3_manuscript_corrections',
-          'Table S5. Corrections applied relative to the earlier form of this study.',
+          'Table S7. Corrections applied relative to the earlier form of this study.',
           '', fontsize=6.2)
+    _si_table_from_df(doc, n.pca_align,
+                      'Table S8. Alignment of the retained principal components with '
+                      'potency, computed on the 84 training molecules of the '
+                      'structure-disjoint partition.')
+    caption(doc,
+            'Each representation was passed through the preprocessing used for '
+            'modelling, that is median imputation, removal of zero-variance columns, '
+            'standardisation and reduction to 17 principal components. The final two '
+            'columns give the largest absolute Pearson correlation between any retained '
+            'component and potency, and the rank of that component by explained '
+            'variance. No model is fitted and no held-out molecule is used.')
+    _si_table_from_df(doc, n.loto,
+                      'Table S9. Performance of the simulation-derived descriptors when '
+                      'a whole target is held out.')
+    caption(doc,
+            'Each row refits the Nu-support vector regressor on the three remaining '
+            'targets and predicts every molecule of the held-out target. The final '
+            'column gives the error of predicting the mean potency of the training '
+            'targets, for reference. A negative coefficient of determination indicates '
+            'that the absolute potency scale of an unseen target is not recovered, while '
+            'a root-mean-square error below that reference indicates that some ordering '
+            'within the held-out target is retained.')
     return doc
 
 
@@ -905,11 +1215,12 @@ def _si_table_from_df(doc, df, cap, fontsize=7.0):
 def main():
     n = N()
     stamp = dt.date.today().strftime('%d%m%y')
+    os.makedirs(PAPER, exist_ok=True)
 
     doc = build_manuscript(n)
     # Figure 1 belongs with the methods; insert it after the descriptor section by
     # appending here so that all display items precede the reference list is preserved
-    out1 = os.path.join(PAPER, f'Moshawih_MD_hybrid_ML_manuscript_{stamp}.docx')
+    out1 = os.path.join(PAPER, f'Moshawih_MD_hybrid_ML_manuscript_V3c_{stamp}.docx')
     try:
         doc.save(out1)
     except PermissionError:
@@ -917,7 +1228,7 @@ def main():
 
     si = build_si(n)
     out2 = os.path.join(PAPER,
-                        f'Moshawih_MD_hybrid_ML_supporting_information_{stamp}.docx')
+                        f'Moshawih_MD_hybrid_ML_supporting_information_V3c_{stamp}.docx')
     try:
         si.save(out2)
     except PermissionError:

@@ -13,7 +13,7 @@ import sys
 
 from docx import Document
 
-V3B = r'D:\Chua files\fourth paper\V3b'
+V3B = r'D:\Chua files\fourth paper\V3c'
 
 TITLE = ('A Controlled Benchmark of Molecular Dynamics Derived Descriptors for '
          'Ligand Potency Prediction')

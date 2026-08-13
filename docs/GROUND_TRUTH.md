@@ -202,9 +202,7 @@ best under the *stricter* partition, at 0.791 / 0.838 against a ceiling of 0.887
 Trimming MACCS and AlphaFold improves the model.
 
 Paired Wilcoxon on per-molecule absolute error (`src/paired_tests.py`), Holm-corrected:
-**1 of 42 comparisons is significant** — md_core89 beats maccs167 under the
-structure-disjoint split (p_holm 0.0048, rank-biserial 0.657, median |error| lower by
-0.336 log units). Everything else is "not distinguishable on these data". The DNN
+**11 of 90 comparisons are significant.** The 89-descriptor MD core beats the PyDescriptor set (p_holm 1.2e-3), the MACCS block (4.8e-2) and the quantum descriptors (2.1e-7) under the structure-disjoint split. Most remaining pairs are "not distinguishable on these data". The DNN
 reproduces its published failure independently (test R² −0.32 here, −0.39 published).
 
 Bootstrap 95 % CIs on test R² are roughly ±0.5 wide on 23–25 test molecules, so the
@@ -221,3 +219,53 @@ published hybrid-vs-Nu-SVR gap of 0.0028 is not resolvable.
 
 Files must not be written while open in Word/Excel — if a `.docx`/`.xlsx` write fails,
 the file is open, so stop and say so.
+
+## V3b findings (13 Aug 2026)
+
+Three facts established during the V3b build that change what the paper may claim.
+
+**1. `md_core89` is not purely trajectory-derived.** Column 5 is `Docking score`.
+88 of the 89 columns come from the trajectory; the docking score belongs to the
+pose that seeded the simulation. Methods already disclosed it inside the
+structural-stability block, but the summary sentence said the representation was
+"generated entirely from the trajectories", which was false. Corrected in V3b.
+Methods also said "Four blocks are involved" when there are five.
+
+**2. The residue descriptors are summed across contact types.**
+`ligand_protein_interaction_forces.py:179` does
+`totals[resname] += len(resids) * energy[kind]`, accumulating all five contact
+types into one value per amino-acid type, then aggregating over every residue of
+that type in the protein. So a PHE value may be hydrophobic or cation-pi, an ASP
+value may be ionic, hydrogen-bonded or water-mediated, and no residue position is
+identified. Any reading of SHAP weights as evidence for a specific interaction or
+binding mode is unsupportable. The V3 sentence claiming a descriptor "points at a
+residue a medicinal chemist can act on" was too strong and has been replaced.
+
+**3. The model does not transfer to an unseen target.** Leave-one-target-out with
+the same Nu-SVR pipeline (`results/leave_one_target_out.csv`):
+
+| held-out target | n | R2 | RMSE | RMSE of training mean |
+|---|---|---|---|---|
+| ESR1 | 26 | -0.135 | 0.468 | 0.950 |
+| MAPK1 | 30 | -0.067 | 0.676 | 1.061 |
+| TDP1 | 43 | -1.579 | 2.407 | 2.431 |
+| TP53 | 23 | -2.641 | 0.708 | 0.993 |
+
+R2 is negative for every target, so the model cannot place an unseen target on the
+absolute potency scale. RMSE is nevertheless below the training-mean baseline in
+all four cases, so some within-target ordering survives. The structure-disjoint
+split prevents ligand leakage but not target leakage: all four targets appear on
+both sides of it. Claims are therefore limited to interpolation among these four
+target systems.
+
+**Also corrected in V3b:** references were numbered by list position, producing
+citations such as (32, 31, 33); they are now numbered by order of first citation,
+and an uncited reference raises at build time. The main-text seed-spread figure
+was `max SD * 3.9` = 3.11, a theoretical range; the observed within-architecture
+spread is 1.99.
+
+**Paired tests, restated precisely.** Structure-disjoint, MD core versus:
+PyDescriptor p_holm 1.2e-3, quantum 2.1e-7, MACCS 4.8e-2 are significant;
+**PaDEL 0.759 and AlphaFold 0.759 are not.** The Abstract and Conclusions
+previously claimed superiority over conventional two-dimensional descriptors
+without that qualification.
