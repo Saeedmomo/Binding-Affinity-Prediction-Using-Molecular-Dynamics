@@ -1,0 +1,2 @@
+Rows,Distinct structures,Structures occurring more than once,Row pairs sharing a structure,Two-row recurring structures,Structures contributing to the alignment randomisation,Pairs in those structures,SS total,SS within structure,Ceiling for a structure-constant predictor,Root mean squared error floor,Largest within-structure potency range
+122,94,19,38,11,8,27,219.841,24.742,0.8875,0.4503,4.397

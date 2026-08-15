@@ -1,0 +1,273 @@
+Index,Variable,Block
+1,PL RMSD,simulation derived core
+2,PL RMSF,simulation derived core
+3,L RMSD,simulation derived core
+4,L RMSF,simulation derived core
+5,Docking score,simulation derived core
+6,protein_angle,simulation derived core
+7,ligand_angle,simulation derived core
+8,water_angle,simulation derived core
+9,metal_angle,simulation derived core
+10,protein_dihedral,simulation derived core
+11,ligand_dihedral,simulation derived core
+12,water_dihedral,simulation derived core
+13,metal_dihedral,simulation derived core
+14,protein_elec,simulation derived core
+15,ligand_elec,simulation derived core
+16,water_elec,simulation derived core
+17,metal_elec,simulation derived core
+18,protein_stretch,simulation derived core
+19,ligand_stretch,simulation derived core
+20,water_stretch,simulation derived core
+21,metal_stretch,simulation derived core
+22,protein_vdw,simulation derived core
+23,ligand_vdw,simulation derived core
+24,water_vdw,simulation derived core
+25,metal_vdw,simulation derived core
+26,protein-ligand_angle,simulation derived core
+27,protein-water_angle,simulation derived core
+28,protein-metal_angle,simulation derived core
+29,ligand-water_angle,simulation derived core
+30,ligand-metal_angle,simulation derived core
+31,water-metal_angle,simulation derived core
+32,protein-ligand_dihedral,simulation derived core
+33,protein-water_dihedral,simulation derived core
+34,protein-metal_dihedral,simulation derived core
+35,ligand-water_dihedral,simulation derived core
+36,ligand-metal_dihedral,simulation derived core
+37,water-metal_dihedral,simulation derived core
+38,protein-ligand_elec,simulation derived core
+39,protein-water_elec,simulation derived core
+40,protein-metal_elec,simulation derived core
+41,ligand-water_elec,simulation derived core
+42,ligand-metal_elec,simulation derived core
+43,water-metal_elec,simulation derived core
+44,protein-ligand_stretch,simulation derived core
+45,protein-water_stretch,simulation derived core
+46,protein-metal_stretch,simulation derived core
+47,ligand-water_stretch,simulation derived core
+48,ligand-metal_stretch,simulation derived core
+49,water-metal_stretch,simulation derived core
+50,protein-ligand_vdw,simulation derived core
+51,protein-water_vdw,simulation derived core
+52,protein-metal_vdw,simulation derived core
+53,ligand-water_vdw,simulation derived core
+54,ligand-metal_vdw,simulation derived core
+55,water-metal_vdw,simulation derived core
+56,Explained-variance-ratio-pc1,simulation derived core
+57,Explained-variance-ratio-pc2,simulation derived core
+58,Explained-variance-ratio-pc3,simulation derived core
+59,PCA-components-shape1,simulation derived core
+60,PCA-components-shape2,simulation derived core
+61,Average-structure-shape,simulation derived core
+62,SASA,simulation derived core
+63,ALA,simulation derived core
+64,ARG,simulation derived core
+65,ASN,simulation derived core
+66,ASP,simulation derived core
+67,CYS,simulation derived core
+68,GLN,simulation derived core
+69,GLU,simulation derived core
+70,GLY,simulation derived core
+71,HIS,simulation derived core
+72,ILE,simulation derived core
+73,LEU,simulation derived core
+74,LYS,simulation derived core
+75,MET,simulation derived core
+76,PHE,simulation derived core
+77,PRO,simulation derived core
+78,SER,simulation derived core
+79,THR,simulation derived core
+80,TRP,simulation derived core
+81,TYR,simulation derived core
+82,VAL,simulation derived core
+83,Total energy,simulation derived core
+84,Potential energy,simulation derived core
+85,Kinetic energy,simulation derived core
+86,Coulombic energy,simulation derived core
+87,Excluded volume interactions,simulation derived core
+88,Energy with forces,simulation derived core
+89,SS charges_atoms,simulation derived core
+90,pLDDT Mean,AlphaFold model confidence
+91,pLDDT Std,AlphaFold model confidence
+92,pLDDT Min,AlphaFold model confidence
+93,pLDDT Max,AlphaFold model confidence
+94,pLDDT Q25,AlphaFold model confidence
+95,pLDDT Q50,AlphaFold model confidence
+96,pLDDT Q75:,AlphaFold model confidence
+97,Fraction Hi,AlphaFold model confidence
+98,Fraction Lo,AlphaFold model confidence
+99,PAE Mean,AlphaFold model confidence
+100,PAE Std,AlphaFold model confidence
+101,PAE Min,AlphaFold model confidence
+102,PAE Max,AlphaFold model confidence
+103,PAE Q25,AlphaFold model confidence
+104,PAE Q50,AlphaFold model confidence
+105,PAE Q75,AlphaFold model confidence
+106,MACCS_1,"MACCS structural key, recomputed"
+107,MACCS_2,"MACCS structural key, recomputed"
+108,MACCS_3,"MACCS structural key, recomputed"
+109,MACCS_4,"MACCS structural key, recomputed"
+110,MACCS_5,"MACCS structural key, recomputed"
+111,MACCS_6,"MACCS structural key, recomputed"
+112,MACCS_7,"MACCS structural key, recomputed"
+113,MACCS_8,"MACCS structural key, recomputed"
+114,MACCS_9,"MACCS structural key, recomputed"
+115,MACCS_10,"MACCS structural key, recomputed"
+116,MACCS_11,"MACCS structural key, recomputed"
+117,MACCS_12,"MACCS structural key, recomputed"
+118,MACCS_13,"MACCS structural key, recomputed"
+119,MACCS_14,"MACCS structural key, recomputed"
+120,MACCS_15,"MACCS structural key, recomputed"
+121,MACCS_16,"MACCS structural key, recomputed"
+122,MACCS_17,"MACCS structural key, recomputed"
+123,MACCS_18,"MACCS structural key, recomputed"
+124,MACCS_19,"MACCS structural key, recomputed"
+125,MACCS_20,"MACCS structural key, recomputed"
+126,MACCS_21,"MACCS structural key, recomputed"
+127,MACCS_22,"MACCS structural key, recomputed"
+128,MACCS_23,"MACCS structural key, recomputed"
+129,MACCS_24,"MACCS structural key, recomputed"
+130,MACCS_25,"MACCS structural key, recomputed"
+131,MACCS_26,"MACCS structural key, recomputed"
+132,MACCS_27,"MACCS structural key, recomputed"
+133,MACCS_28,"MACCS structural key, recomputed"
+134,MACCS_29,"MACCS structural key, recomputed"
+135,MACCS_30,"MACCS structural key, recomputed"
+136,MACCS_31,"MACCS structural key, recomputed"
+137,MACCS_32,"MACCS structural key, recomputed"
+138,MACCS_33,"MACCS structural key, recomputed"
+139,MACCS_34,"MACCS structural key, recomputed"
+140,MACCS_35,"MACCS structural key, recomputed"
+141,MACCS_36,"MACCS structural key, recomputed"
+142,MACCS_37,"MACCS structural key, recomputed"
+143,MACCS_38,"MACCS structural key, recomputed"
+144,MACCS_39,"MACCS structural key, recomputed"
+145,MACCS_40,"MACCS structural key, recomputed"
+146,MACCS_41,"MACCS structural key, recomputed"
+147,MACCS_42,"MACCS structural key, recomputed"
+148,MACCS_43,"MACCS structural key, recomputed"
+149,MACCS_44,"MACCS structural key, recomputed"
+150,MACCS_45,"MACCS structural key, recomputed"
+151,MACCS_46,"MACCS structural key, recomputed"
+152,MACCS_47,"MACCS structural key, recomputed"
+153,MACCS_48,"MACCS structural key, recomputed"
+154,MACCS_49,"MACCS structural key, recomputed"
+155,MACCS_50,"MACCS structural key, recomputed"
+156,MACCS_51,"MACCS structural key, recomputed"
+157,MACCS_52,"MACCS structural key, recomputed"
+158,MACCS_53,"MACCS structural key, recomputed"
+159,MACCS_54,"MACCS structural key, recomputed"
+160,MACCS_55,"MACCS structural key, recomputed"
+161,MACCS_56,"MACCS structural key, recomputed"
+162,MACCS_57,"MACCS structural key, recomputed"
+163,MACCS_58,"MACCS structural key, recomputed"
+164,MACCS_59,"MACCS structural key, recomputed"
+165,MACCS_60,"MACCS structural key, recomputed"
+166,MACCS_61,"MACCS structural key, recomputed"
+167,MACCS_62,"MACCS structural key, recomputed"
+168,MACCS_63,"MACCS structural key, recomputed"
+169,MACCS_64,"MACCS structural key, recomputed"
+170,MACCS_65,"MACCS structural key, recomputed"
+171,MACCS_66,"MACCS structural key, recomputed"
+172,MACCS_67,"MACCS structural key, recomputed"
+173,MACCS_68,"MACCS structural key, recomputed"
+174,MACCS_69,"MACCS structural key, recomputed"
+175,MACCS_70,"MACCS structural key, recomputed"
+176,MACCS_71,"MACCS structural key, recomputed"
+177,MACCS_72,"MACCS structural key, recomputed"
+178,MACCS_73,"MACCS structural key, recomputed"
+179,MACCS_74,"MACCS structural key, recomputed"
+180,MACCS_75,"MACCS structural key, recomputed"
+181,MACCS_76,"MACCS structural key, recomputed"
+182,MACCS_77,"MACCS structural key, recomputed"
+183,MACCS_78,"MACCS structural key, recomputed"
+184,MACCS_79,"MACCS structural key, recomputed"
+185,MACCS_80,"MACCS structural key, recomputed"
+186,MACCS_81,"MACCS structural key, recomputed"
+187,MACCS_82,"MACCS structural key, recomputed"
+188,MACCS_83,"MACCS structural key, recomputed"
+189,MACCS_84,"MACCS structural key, recomputed"
+190,MACCS_85,"MACCS structural key, recomputed"
+191,MACCS_86,"MACCS structural key, recomputed"
+192,MACCS_87,"MACCS structural key, recomputed"
+193,MACCS_88,"MACCS structural key, recomputed"
+194,MACCS_89,"MACCS structural key, recomputed"
+195,MACCS_90,"MACCS structural key, recomputed"
+196,MACCS_91,"MACCS structural key, recomputed"
+197,MACCS_92,"MACCS structural key, recomputed"
+198,MACCS_93,"MACCS structural key, recomputed"
+199,MACCS_94,"MACCS structural key, recomputed"
+200,MACCS_95,"MACCS structural key, recomputed"
+201,MACCS_96,"MACCS structural key, recomputed"
+202,MACCS_97,"MACCS structural key, recomputed"
+203,MACCS_98,"MACCS structural key, recomputed"
+204,MACCS_99,"MACCS structural key, recomputed"
+205,MACCS_100,"MACCS structural key, recomputed"
+206,MACCS_101,"MACCS structural key, recomputed"
+207,MACCS_102,"MACCS structural key, recomputed"
+208,MACCS_103,"MACCS structural key, recomputed"
+209,MACCS_104,"MACCS structural key, recomputed"
+210,MACCS_105,"MACCS structural key, recomputed"
+211,MACCS_106,"MACCS structural key, recomputed"
+212,MACCS_107,"MACCS structural key, recomputed"
+213,MACCS_108,"MACCS structural key, recomputed"
+214,MACCS_109,"MACCS structural key, recomputed"
+215,MACCS_110,"MACCS structural key, recomputed"
+216,MACCS_111,"MACCS structural key, recomputed"
+217,MACCS_112,"MACCS structural key, recomputed"
+218,MACCS_113,"MACCS structural key, recomputed"
+219,MACCS_114,"MACCS structural key, recomputed"
+220,MACCS_115,"MACCS structural key, recomputed"
+221,MACCS_116,"MACCS structural key, recomputed"
+222,MACCS_117,"MACCS structural key, recomputed"
+223,MACCS_118,"MACCS structural key, recomputed"
+224,MACCS_119,"MACCS structural key, recomputed"
+225,MACCS_120,"MACCS structural key, recomputed"
+226,MACCS_121,"MACCS structural key, recomputed"
+227,MACCS_122,"MACCS structural key, recomputed"
+228,MACCS_123,"MACCS structural key, recomputed"
+229,MACCS_124,"MACCS structural key, recomputed"
+230,MACCS_125,"MACCS structural key, recomputed"
+231,MACCS_126,"MACCS structural key, recomputed"
+232,MACCS_127,"MACCS structural key, recomputed"
+233,MACCS_128,"MACCS structural key, recomputed"
+234,MACCS_129,"MACCS structural key, recomputed"
+235,MACCS_130,"MACCS structural key, recomputed"
+236,MACCS_131,"MACCS structural key, recomputed"
+237,MACCS_132,"MACCS structural key, recomputed"
+238,MACCS_133,"MACCS structural key, recomputed"
+239,MACCS_134,"MACCS structural key, recomputed"
+240,MACCS_135,"MACCS structural key, recomputed"
+241,MACCS_136,"MACCS structural key, recomputed"
+242,MACCS_137,"MACCS structural key, recomputed"
+243,MACCS_138,"MACCS structural key, recomputed"
+244,MACCS_139,"MACCS structural key, recomputed"
+245,MACCS_140,"MACCS structural key, recomputed"
+246,MACCS_141,"MACCS structural key, recomputed"
+247,MACCS_142,"MACCS structural key, recomputed"
+248,MACCS_143,"MACCS structural key, recomputed"
+249,MACCS_144,"MACCS structural key, recomputed"
+250,MACCS_145,"MACCS structural key, recomputed"
+251,MACCS_146,"MACCS structural key, recomputed"
+252,MACCS_147,"MACCS structural key, recomputed"
+253,MACCS_148,"MACCS structural key, recomputed"
+254,MACCS_149,"MACCS structural key, recomputed"
+255,MACCS_150,"MACCS structural key, recomputed"
+256,MACCS_151,"MACCS structural key, recomputed"
+257,MACCS_152,"MACCS structural key, recomputed"
+258,MACCS_153,"MACCS structural key, recomputed"
+259,MACCS_154,"MACCS structural key, recomputed"
+260,MACCS_155,"MACCS structural key, recomputed"
+261,MACCS_156,"MACCS structural key, recomputed"
+262,MACCS_157,"MACCS structural key, recomputed"
+263,MACCS_158,"MACCS structural key, recomputed"
+264,MACCS_159,"MACCS structural key, recomputed"
+265,MACCS_160,"MACCS structural key, recomputed"
+266,MACCS_161,"MACCS structural key, recomputed"
+267,MACCS_162,"MACCS structural key, recomputed"
+268,MACCS_163,"MACCS structural key, recomputed"
+269,MACCS_164,"MACCS structural key, recomputed"
+270,MACCS_165,"MACCS structural key, recomputed"
+271,MACCS_166,"MACCS structural key, recomputed"
+272,MACCS_167,"MACCS structural key, recomputed"

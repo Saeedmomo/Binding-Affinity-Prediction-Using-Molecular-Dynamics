@@ -1,0 +1,2 @@
+Representation,Best learner,Median held-out R2,Simulation-derived core,Median paired difference,Partitions where the core wins,Wilcoxon p
+"Protein identity alone, four indicator columns",rf (raw),0.4747,0.7811,-0.2847,10 of 10,0.002

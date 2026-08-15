@@ -1,0 +1,21 @@
+Residue,Reachable by hydrophobic contacts,Reachable by ionic contacts,Reachable only by the three suppressed types,Systems with a non-zero value,Maximum,Mean
+ALA,True,False,False,91,49.09,11.28
+ARG,False,True,False,95,245.35,14.244
+ASN,False,False,True,0,0.0,0.0
+ASP,False,True,False,93,135.44,19.111
+CYS,False,False,True,0,0.0,0.0
+GLN,False,False,True,0,0.0,0.0
+GLU,False,True,False,114,113.72,19.346
+GLY,False,False,True,0,0.0,0.0
+HIS,False,False,True,0,0.0,0.0
+ILE,True,False,False,86,43.79,9.589
+LEU,True,False,False,109,230.15,53.12
+LYS,False,True,False,79,176.81,16.664
+MET,True,False,False,75,92.31,17.624
+PHE,True,False,False,99,37.87,7.825
+PRO,False,False,True,0,0.0,0.0
+SER,False,False,True,0,0.0,0.0
+THR,False,False,True,0,0.0,0.0
+TRP,True,False,False,98,57.37,7.107
+TYR,True,False,False,62,41.89,3.21
+VAL,True,False,False,116,53.71,12.416

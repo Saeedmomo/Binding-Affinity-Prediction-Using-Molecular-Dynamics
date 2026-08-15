@@ -1,0 +1,57 @@
+Index,Variable
+1,PL RMSD
+2,PL RMSF
+3,L RMSD
+4,L RMSF
+5,protein_angle
+6,ligand_angle
+7,protein_dihedral
+8,ligand_dihedral
+9,protein_elec
+10,ligand_elec
+11,water_elec
+12,metal_elec
+13,protein_stretch
+14,ligand_stretch
+15,protein_vdw
+16,ligand_vdw
+17,water_vdw
+18,metal_vdw
+19,protein-metal_angle
+20,protein-metal_dihedral
+21,protein-ligand_elec
+22,protein-water_elec
+23,protein-metal_elec
+24,ligand-water_elec
+25,ligand-metal_elec
+26,water-metal_elec
+27,protein-metal_stretch
+28,protein-ligand_vdw
+29,protein-water_vdw
+30,protein-metal_vdw
+31,ligand-water_vdw
+32,ligand-metal_vdw
+33,water-metal_vdw
+34,Explained-variance-ratio-pc1
+35,Explained-variance-ratio-pc2
+36,Explained-variance-ratio-pc3
+37,SASA
+38,ALA
+39,ARG
+40,ASP
+41,GLU
+42,ILE
+43,LEU
+44,LYS
+45,MET
+46,PHE
+47,TRP
+48,TYR
+49,VAL
+50,Total energy
+51,Potential energy
+52,Kinetic energy
+53,Coulombic energy
+54,Excluded volume interactions
+55,Energy with forces
+56,SS charges_atoms

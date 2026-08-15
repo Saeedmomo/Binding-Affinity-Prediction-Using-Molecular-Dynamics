@@ -1,0 +1,90 @@
+Index in the 89-column core,Variable,Block,Constant across all systems,In the 56-column compact subset,Reason for removal,Minimum,Maximum,Mean
+1,PL RMSD,structural stability,False,True,,0.306733,36.44339,5.734552
+2,PL RMSF,structural stability,False,True,,0.220778,37.140333,3.299914
+3,L RMSD,structural stability,False,True,,0.137,5.664624,0.818919
+4,L RMSF,structural stability,False,True,,0.13875,8.685719,0.567111
+5,Docking score,docking score,False,False,"from the docking pose, not the trajectory",-13.201,-0.024,-7.259336
+6,protein_angle,interaction energy decomposition,False,True,,1513.697575,3490.157231,2266.450246
+7,ligand_angle,interaction energy decomposition,False,True,,5.891765,45.383568,16.451516
+8,water_angle,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+9,metal_angle,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+10,protein_dihedral,interaction energy decomposition,False,True,,767.711263,1817.306187,1232.205641
+11,ligand_dihedral,interaction energy decomposition,False,True,,-1.026378,53.715897,15.913763
+12,water_dihedral,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+13,metal_dihedral,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+14,protein_elec,structural stability,False,True,,9063.396801,17058.97565,11567.046831
+15,ligand_elec,structural stability,False,True,,42.507633,426.098358,163.261979
+16,water_elec,structural stability,False,True,,328159.621,553979.2064,440869.459613
+17,metal_elec,structural stability,False,True,,261.127788,3266.910126,2063.817424
+18,protein_stretch,interaction energy decomposition,False,True,,553.769933,1292.893369,835.900905
+19,ligand_stretch,interaction energy decomposition,False,True,,6.183265,17.751569,9.873779
+20,water_stretch,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+21,metal_stretch,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+22,protein_vdw,structural stability,False,True,,-1326.424452,-397.080335,-746.19771
+23,ligand_vdw,structural stability,False,True,,5.895753,32.072438,18.266633
+24,water_vdw,structural stability,False,True,,11956.22989,18583.69653,15305.03737
+25,metal_vdw,structural stability,False,True,,-1.2e-05,5.389557,3.513868
+26,protein-ligand_angle,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+27,protein-water_angle,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+28,protein-metal_angle,interaction energy decomposition,False,True,,0.0,8.430549,1.831565
+29,ligand-water_angle,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+30,ligand-metal_angle,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+31,water-metal_angle,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+32,protein-ligand_dihedral,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+33,protein-water_dihedral,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+34,protein-metal_dihedral,interaction energy decomposition,False,True,,0.0,0.354894,0.051642
+35,ligand-water_dihedral,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+36,ligand-metal_dihedral,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+37,water-metal_dihedral,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+38,protein-ligand_elec,structural stability,False,True,,-263.67528,78.515155,-31.618091
+39,protein-water_elec,structural stability,False,True,,-10068.22609,-4929.617187,-6991.490047
+40,protein-metal_elec,structural stability,False,True,,-1656.03232,-18.786287,-689.560144
+41,ligand-water_elec,structural stability,False,True,,-225.584609,25.479556,-31.265639
+42,ligand-metal_elec,structural stability,False,True,,-300.198561,48.19664,-5.44711
+43,water-metal_elec,structural stability,False,True,,-11250.26201,-950.245812,-7526.007597
+44,protein-ligand_stretch,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+45,protein-water_stretch,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+46,protein-metal_stretch,interaction energy decomposition,False,True,,0.0,13.681521,2.591042
+47,ligand-water_stretch,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+48,ligand-metal_stretch,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+49,water-metal_stretch,interaction energy decomposition,True,False,constant across all 122 systems,0.0,0.0,0.0
+50,protein-ligand_vdw,structural stability,False,True,,-58.163138,-10.494417,-32.260488
+51,protein-water_vdw,structural stability,False,True,,-520.713538,-232.970587,-378.317362
+52,protein-metal_vdw,structural stability,False,True,,-17.208411,6.424335,-4.443067
+53,ligand-water_vdw,structural stability,False,True,,-22.357957,5.046337,-5.777849
+54,ligand-metal_vdw,structural stability,False,True,,-1.047711,7.460543,-0.006527
+55,water-metal_vdw,structural stability,False,True,,71.240777,592.021588,414.761556
+56,Explained-variance-ratio-pc1,ligand conformational motion,False,True,,0.02981,0.839601,0.49983
+57,Explained-variance-ratio-pc2,ligand conformational motion,False,True,,0.047636,0.43371,0.189737
+58,Explained-variance-ratio-pc3,ligand conformational motion,False,True,,0.0253,0.188984,0.096091
+59,PCA-components-shape1,ligand conformational motion,True,False,"constant across all 122 systems; records an array dimension, not a conformational quantity",3.0,3.0,3.0
+60,PCA-components-shape2,ligand conformational motion,False,False,"records an array dimension, not a conformational quantity",72.0,216.0,118.032787
+61,Average-structure-shape,ligand conformational motion,False,False,"records an array dimension, not a conformational quantity",24.0,72.0,39.360656
+62,SASA,structural stability,False,True,,1.525617,577.817822,130.229693
+63,ALA,per-residue interaction,False,True,,0.0,49.09,11.279672
+64,ARG,per-residue interaction,False,True,,0.0,245.35,14.24418
+65,ASN,per-residue interaction,True,False,constant across all 122 systems,0.0,0.0,0.0
+66,ASP,per-residue interaction,False,True,,0.0,135.44,19.11082
+67,CYS,per-residue interaction,True,False,constant across all 122 systems,0.0,0.0,0.0
+68,GLN,per-residue interaction,True,False,constant across all 122 systems,0.0,0.0,0.0
+69,GLU,per-residue interaction,False,True,,0.0,113.72,19.345738
+70,GLY,per-residue interaction,True,False,constant across all 122 systems,0.0,0.0,0.0
+71,HIS,per-residue interaction,True,False,constant across all 122 systems,0.0,0.0,0.0
+72,ILE,per-residue interaction,False,True,,0.0,43.79,9.588525
+73,LEU,per-residue interaction,False,True,,0.0,230.15,53.12
+74,LYS,per-residue interaction,False,True,,0.0,176.81,16.664098
+75,MET,per-residue interaction,False,True,,0.0,92.31,17.62418
+76,PHE,per-residue interaction,False,True,,0.0,37.87,7.824508
+77,PRO,per-residue interaction,True,False,constant across all 122 systems,0.0,0.0,0.0
+78,SER,per-residue interaction,True,False,constant across all 122 systems,0.0,0.0,0.0
+79,THR,per-residue interaction,True,False,constant across all 122 systems,0.0,0.0,0.0
+80,TRP,per-residue interaction,False,True,,0.0,57.37,7.107295
+81,TYR,per-residue interaction,False,True,,0.0,41.89,3.210082
+82,VAL,per-residue interaction,False,True,,0.0,53.71,12.415656
+83,Total energy,structural stability,False,True,,-229066.4013,-73713.20219,-95921.082112
+84,Potential energy,structural stability,False,True,,-282154.0433,-91361.59141,-119101.254175
+85,Kinetic energy,structural stability,False,True,,16645.9665,52041.77776,22439.190408
+86,Coulombic energy,structural stability,False,True,,0.282002,1.722894,0.754856
+87,Excluded volume interactions,structural stability,False,True,,190.979635,1430.953912,740.121264
+88,Energy with forces,structural stability,False,True,,-4218.791998,-1354.704862,-1775.968125
+89,SS charges_atoms,structural stability,False,True,,8477.986967,28117.59129,11488.051457

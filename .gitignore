@@ -3,3 +3,11 @@ __pycache__/
 .ipynb_checkpoints/
 logs/
 *.tmp
+
+# manuscript and figures are kept out of this repository by design
+*.docx
+figures/
+figures_v3/
+V3*/
+V4/
+V5/

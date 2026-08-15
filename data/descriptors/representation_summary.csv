@@ -1,0 +1,5 @@
+Representation,Columns,Composition
+Full corrected set,272,"89 simulation derived, 16 AlphaFold confidence, 167 recomputed MACCS keys"
+Core plus recomputed MACCS,256,"89 simulation derived, 167 recomputed MACCS keys"
+Simulation derived core,89,"five blocks, see core 89 variables"
+Compact trajectory subset,56,"the core less 30 constant columns, 2 array-shape artefacts and the docking score"
