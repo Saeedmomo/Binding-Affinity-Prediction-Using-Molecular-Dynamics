@@ -1,7 +1,7 @@
 """Dataset registry for the fourth-paper benchmarks.
 
 Every loader returns (X: DataFrame, y: Series, meta: dict) with rows in the canonical
-study order established in docs/GROUND_TRUTH.md section 2. Source files are read-only.
+canonical study order. Source files are read-only.
 """
 from __future__ import annotations
 
@@ -62,8 +62,8 @@ def annotations() -> pd.DataFrame:
 
 
 def _canonical_pic50() -> pd.Series:
-    """PIC50 in canonical row order. Identical in 2.csv, JDes_output2 and merged_* -
-    verified with np.allclose (docs/GROUND_TRUTH.md section 2)."""
+    """PIC50 in canonical row order. Identical in 2.csv, JDes_output2 and merged_*,
+    verified with np.allclose."""
     return pd.read_csv(PATHS['md272'], usecols=[TARGET], low_memory=False)[TARGET]
 
 

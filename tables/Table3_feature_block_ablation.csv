@@ -1,5 +1,0 @@
-Feature block,Descriptors,R2 train,R2 CV,R2 test,R2 holdout,RMSE test
-MD + AlphaFold + MACCS (272),272,0.8264,0.6604,0.5751,0.8144,0.9147
-MD + energetics + ligand-PCA + residue forces (89),89,0.8134,0.7088,0.6445,0.7149,0.8366
-MACCS fingerprints only (167),167,0.6535,0.4391,0.3925,0.6246,1.0937
-AlphaFold pLDDT/PAE only (16),16,0.4497,0.3885,0.2818,0.4532,1.1891

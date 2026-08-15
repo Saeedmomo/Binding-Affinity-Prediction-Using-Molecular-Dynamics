@@ -4,7 +4,7 @@ Two decisions here matter scientifically.
 
 1. GEOMETRY SOURCE. Coordinates are taken from the docked/MD pose stored in each .mol2
    file, not from a fresh 2D->3D embedding. 28 of the 122 rows are duplicate 2D
-   structures (94 unique SMILES over 122 rows, docs/GROUND_TRUTH.md section 6) that
+   structures (94 unique SMILES over 122 rows) that
    differ only in the conformation adopted against their respective target. Starting
    from the pose is the only way quantum descriptors can carry any per-complex
    information at all.

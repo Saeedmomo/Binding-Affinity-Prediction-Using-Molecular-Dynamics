@@ -1,6 +1,6 @@
 """Reproducible implementation of the manuscript's Nu-SVR + DNN + Ridge hybrid.
 
-Recovered from the authors' own code (docs/GROUND_TRUTH.md sections 4 and 5) and then
+Recovered from the authors' own code and then
 corrected in four places that materially affect the reported numbers. Each correction is
 switchable so the published result can still be reproduced exactly.
 
@@ -58,7 +58,7 @@ NUSVR_MAX_ITER = 2_000_000
 
 # ------------------------------------------------------------------------ metrics
 def w_new(r2_train, r2_cv, r2_test, mse, rmse, mae):
-    """Verbatim from the authors' Nu-SVR script (docs/GROUND_TRUTH.md section 4)."""
+    """Verbatim from the authors' Nu-SVR script."""
     denom = mse + rmse + mae
     if denom <= 0:
         return float('nan')
