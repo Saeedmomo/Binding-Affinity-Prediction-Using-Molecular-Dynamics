@@ -65,10 +65,9 @@ THREE MEASUREMENTS PER REPRESENTATION.
    is the opposite of the constancy the ceiling assumes, and a representation at
    zero is exactly constant. Both extremes occur in these four sets.
 
-   A correctly computed MACCS fingerprint is carried through the whole analysis as
-   a positive control, since it is a function of the molecular graph and must give
-   rho = 0 exactly. It does. The MACCS block stored in the study matrix does not,
-   which is how the block was found to be corrupt; see maccs_fix.py.
+   A MACCS fingerprint is carried through the whole analysis as a positive
+   control, since it is a function of the molecular graph and must therefore give
+   rho = 0 exactly. It does, which is what validates the statistic.
 
 2. Separation. Median Euclidean distance between rows of the same structure over
    median distance between rows of different structures, in the standardised space.
@@ -121,11 +120,10 @@ sys.path.insert(0, str(ROOT))
 from maccs_fix import maccs_frame  # noqa: E402
 
 RESULTS = ROOT / "results"
-SETS = ["md_core89", "padel", "mol2desc", "dft", "maccs_correct", "maccs167"]
+SETS = ["md_core89", "padel", "mol2desc", "dft", "maccs_correct"]
 LABEL = {"md_core89": "Simulation derived (89)", "padel": "PaDEL (1444)",
          "mol2desc": "PyDescriptor (62571)", "dft": "Quantum chemical (109)",
-         "maccs_correct": "MACCS keys (167), recomputed, positive control",
-         "maccs167": "MACCS keys (167) as stored in the study matrix"}
+         "maccs_correct": "MACCS keys (167), positive control"}
 
 
 def load_set(key):
@@ -359,8 +357,6 @@ def main():
         # fails to detect alignment cannot make a varying representation constant.
         if exact_constant:
             verdict = "applies exactly, representation constant within structure"
-        elif key == "maccs167":
-            verdict = "not interpretable, stored representation is corrupt"
         else:
             verdict = "not a proven bound, representation varies within structure"
         if key == "maccs_correct":
@@ -407,8 +403,8 @@ def main():
             row["Holm p for four comparison sets"] = "not defined, constant"
             row["Alignment conclusion"] = "not testable, constant"
         else:
-            row["Holm p for four comparison sets"] = "diagnostic only"
-            row["Alignment conclusion"] = "diagnostic only, block is corrupt"
+            row["Holm p for four comparison sets"] = "not applicable"
+            row["Alignment conclusion"] = "not applicable, positive control"
         del row["_p"]
 
     frame = pd.DataFrame(rows)

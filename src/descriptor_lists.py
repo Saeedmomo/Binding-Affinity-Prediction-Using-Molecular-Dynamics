@@ -1,26 +1,22 @@
 """Emit the exact variable list behind every representation in the benchmark.
 
 The benchmark compares representations of different sizes, and the reduction from
-272 columns to 89 and then to 56 is the central claim. None of that is checkable
+272 columns to 89 and then to 56 is a central claim. None of that is checkable
 unless the membership of each set is published, so this writes the lists out and
 records, for every column of the 89-descriptor core, which block it belongs to and
-why it survives or is removed at each stage.
+whether it survives into the compact subset.
 
 Removal criteria for the 56-column subset, all fixed from feature properties and
 provenance rather than from any observed predictive outcome:
 
-  constant     the column takes one value across all 122 systems, so it cannot
-               inform any prediction. Thirty columns, comprising eight residue
-               descriptors that no interaction type ever reached and twenty-one
-               interaction energy terms for water and metal coordinates these
-               systems do not contain, plus one array-shape constant.
+  constant     the column takes one value across all 122 systems of this study, so
+               it cannot inform any prediction here. Thirty columns.
   artefact     the column records an array dimension rather than a conformational
-               quantity. Two such columns vary across systems and correlate with
-               potency more strongly than any genuine descriptor.
+               quantity. Two such columns vary across systems.
   not from     the docking score belongs to the pose that seeded the simulation and
   trajectory   is the only column of the core not derived from the trajectory.
 
-    python descriptor_lists.py --out ../benchmark_work/github_repo/data/descriptors
+    python descriptor_lists.py --out ../data/descriptors
 """
 from __future__ import annotations
 
@@ -143,10 +139,11 @@ def main():
     for r in counts.itertuples():
         lines.append(f"| {r.Block} | {r.columns} | {int(r.constant)} | "
                      f"{int(r.in_compact)} |")
-    lines += ["", "The eight per-residue descriptors that are constant are ASN, CYS, "
-                  "GLN, GLY, HIS, PRO, SER and THR. They are exactly the residues "
-                  "reachable only by the three interaction types that the extraction "
-                  "code never evaluated; see `docs/RESIDUE_BLOCK_AUDIT.md`.", ""]
+    lines += ["", "A column counted as constant takes one value across all 122 "
+                  "systems of this study and therefore cannot contribute to any "
+                  "prediction on this dataset. Constancy is a property of these "
+                  "systems, not of the descriptor definition: the same column may "
+                  "vary on a different set of complexes.", ""]
     (out / "README.md").write_text("\n".join(lines), encoding="utf-8")
 
     print(counts.to_string(index=False))

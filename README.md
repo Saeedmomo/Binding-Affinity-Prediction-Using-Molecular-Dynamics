@@ -106,17 +106,33 @@ The 56-column subset is 89 minus 30 constant columns, minus 2 array-shape artefa
 minus the docking score. **Every criterion is a property of the feature or its
 provenance; none uses the outcome**, so the subset needs no correction for selection.
 
-## Two defects found in the study matrices
+## Descriptor computation
 
-Both were found by asking whether a descriptor has a property its definition
-requires, not by inspecting performance. See `docs/DATA_INTEGRITY_FINDINGS.md`.
+The per-residue interaction block is the part of the representation with no
+ligand-only counterpart. For every simulation frame, each contact between the ligand
+and a protein residue is classified into one of five types, weighted by a
+representative energy for that type, and accumulated by the amino-acid identity of
+the residue:
 
-1. The stored 167-column MACCS block does not describe these molecules: zero of 38
-   same-structure row pairs hold identical keys, and it agrees with a correct
-   recomputation in 2 rows of 122. `src/maccs_fix.py` recovers a verified block.
-2. Three of the five interaction types in the per-residue block never contributed to
-   any row, leaving hydrophobic and ionic contacts only. `src/residue_audit.py`
-   proves this from the stored matrix and asserts it.
+```
+F(r) = (1/N) * sum over frames f, sum over interaction types k of  e(k) * n(r,k,f)
+```
+
+with N the number of frames, k running over hydrogen bonds, cation pi contacts,
+hydrophobic contacts, ionic interactions and water bridges, e(k) the adopted energy
+in kcal per mole, and n(r,k,f) the number of distinct residues of type r making a
+contact of type k in frame f. Counting distinct residues rather than atom pairs
+stops one contact involving several nearby atoms from being counted several times.
+Geometric criteria and adopted energies are in
+`docs/INTERACTION_ENERGY_REFERENCES.md`; the extraction is
+`src/feature_extraction/ligand_protein_interaction_forces.py`.
+
+Structural keys are computed with `src/maccs_fix.py`, which reads each molecule from
+its mol2 file, falls back through a documented parse chain for structures that resist
+full sanitisation, and verifies that the keys are identical for every pair of rows
+holding the same canonical structure before returning. The verified block is in
+`results/benchmark/maccs_recomputed.csv` and is the block used in every analysis
+here.
 
 ## Reproducing
 

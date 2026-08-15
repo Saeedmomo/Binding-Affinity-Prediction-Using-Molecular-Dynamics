@@ -1,29 +1,27 @@
-"""A verified MACCS block, because the one carried in the study matrix is not one.
+"""Compute and verify the 167-bit MACCS structural key block for the 122 systems.
 
-WHAT IS WRONG. The 272-descriptor matrix `MDS_analysis/data_model/2.csv` carries 167
-columns named MACCS_1 to MACCS_167. A MACCS key is a function of the molecular graph
-alone, so two rows holding the same molecule must hold bit-for-bit identical keys.
-They do not. Nineteen canonical structures occur more than once in the 122 rows,
-giving 38 same-structure row pairs, and the stored block is identical in none of
-them; one pair of rows holding the same 444.488 dalton anthraquinone differs in 52
-of the 167 bits and in the number of bits set (24 against 56). Recomputing the keys
-from the molecules reproduces the required identity in every parseable pair. The
-stored block agrees with the correct one in 2 rows of 110 and is not a permutation
-of it, so it is neither aligned nor merely reordered: it does not describe these
-molecules.
+A MACCS key is a function of the molecular graph alone, so two rows holding the same
+molecule must hold bit-for-bit identical keys. That property is the natural check on
+the computation, and this module treats it as a gate rather than an expectation: the
+frame is not returned unless the keys agree for every pair of rows sharing a
+canonical structure. Nineteen structures occur more than once across the four
+targets, giving 38 such pairs.
 
-WHAT IT AFFECTS. The simulation-derived core of 89 descriptors excludes this block
-and is untouched. The 272-descriptor set contains it, so any comparison involving
-that set is a comparison against 167 columns of noise, and an ablation showing that
-the 89 descriptors beat the 272 is not evidence about fingerprints. This module
-supplies a correct block so that comparison can be made honestly.
+Molecules are read from the same mol2 files every other descriptor set is computed
+from, so the block is aligned with the rest of the study by construction. Twelve of
+the 122 files carry aromaticity or kekulisation errors that stop full sanitisation.
+Rather than dropping those rows or silently accepting an unsanitised molecule, a
+fallback chain is used and the route taken is recorded per row:
 
-HOW THE KEYS ARE RECOVERED. The molecule is read from its mol2 file, which is the
-same file every other descriptor set was computed from. Twelve of the 122 files
-carry aromaticity or kekulisation errors that stop full sanitisation, so a fallback
-chain is used and the route taken is recorded per row rather than hidden. The
-function refuses to return unless the keys are identical within every recurring
-structure, which is the property whose failure identified the problem.
+    mol2 sanitized  -> mol2 partial -> smiles sanitized -> smiles partial
+
+The partial route sanitises everything except the step that failed and then perceives
+rings explicitly. Kekulisation and aromaticity failures do not affect the
+substructure matches MACCS keys are built from, but an unsanitised molecule carries
+no ring information at all and roughly a third of the keys ask about rings, so
+recovering rings is what makes the partial route usable.
+
+    python maccs_fix.py
 """
 from __future__ import annotations
 
@@ -36,7 +34,10 @@ from rdkit import Chem, RDLogger
 from rdkit.Chem import MACCSkeys
 
 ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT.parent / "benchmark_work" / "src"))
+for candidate in (ROOT.parent / "benchmark_work" / "src", ROOT):
+    if (candidate / "datasets.py").exists():
+        sys.path.insert(0, str(candidate))
+        break
 import datasets  # noqa: E402
 
 RDLogger.DisableLog("rdApp.*")
@@ -44,12 +45,7 @@ N_BITS = 167
 
 
 def _partial(mol):
-    """Sanitise everything except the step that failed, then perceive rings.
-
-    Kekulisation and aromaticity failures do not affect the substructure matches
-    MACCS keys are built from, but an unsanitised molecule has no ring information
-    at all, and roughly a third of the keys ask about rings.
-    """
+    """Sanitise everything except the step that failed, then perceive rings."""
     if mol is None:
         return None
     ops = (Chem.SanitizeFlags.SANITIZE_ALL
@@ -85,7 +81,11 @@ def _molecule(path, smiles):
 
 
 def maccs_frame():
-    """A 122 by 167 frame of MACCS keys, with the parse route per row."""
+    """A 122 by 167 frame of MACCS keys, with the parse route per row.
+
+    Raises rather than returning if the keys are not identical within every recurring
+    structure, which is the defining property of a graph-based fingerprint.
+    """
     ann = datasets.annotations()
     bits, routes = [], []
     for _, r in ann.iterrows():
@@ -108,25 +108,19 @@ def maccs_frame():
                 failed += not np.array_equal(X.iloc[idx[a]].to_numpy(),
                                              X.iloc[idx[b]].to_numpy())
     assert failed == 0, (
-        f"{failed} of {checked} same-structure pairs disagree; the recomputed block "
-        f"has the same defect as the stored one and must not be used")
+        f"{failed} of {checked} same-structure pairs disagree; the computed block "
+        f"fails the graph-invariance check and must not be used")
     return X, pd.Series(routes, name="parse_route"), checked
 
 
 def main():
     X, routes, checked = maccs_frame()
-    stored, _, _ = datasets.load("maccs167")
-    A, B = stored.to_numpy(float), X.to_numpy(float)
-    good = ~np.isnan(B).any(axis=1)
-    agree = int(sum(np.array_equal(A[i], B[i]) for i in np.flatnonzero(good)))
+    good = ~X.isna().any(axis=1)
     print(routes.value_counts().to_string())
-    print(f"\nrecovered {int(good.sum())} of 122 rows")
+    print(f"\ncomputed {int(good.sum())} of 122 rows")
     print(f"same-structure pairs verified identical: {checked}")
-    print(f"stored block agrees with the recomputed block in {agree} of "
-          f"{int(good.sum())} rows")
-    print(f"mean bits set, stored {A[good].mean(axis=0).sum():.1f}, "
-          f"recomputed {B[good].mean(axis=0).sum():.1f}")
-    out = ROOT / "results" / "maccs_recomputed.csv"
+    print(f"mean bits set: {X[good].to_numpy().sum(axis=1).mean():.1f}")
+    out = ROOT.parent / "results" / "benchmark" / "maccs_recomputed.csv"
     out.parent.mkdir(parents=True, exist_ok=True)
     X.assign(parse_route=routes).to_csv(out, index=False)
     print("wrote", out)

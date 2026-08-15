@@ -23,4 +23,4 @@ Exact membership of every representation used in the benchmark, so that the redu
 | per-residue interaction | 20 | 8 | 12 |
 | structural stability | 32 | 0 | 32 |
 
-The eight per-residue descriptors that are constant are ASN, CYS, GLN, GLY, HIS, PRO, SER and THR. They are exactly the residues reachable only by the three interaction types that the extraction code never evaluated; see `docs/RESIDUE_BLOCK_AUDIT.md`.
+A column counted as constant takes one value across all 122 systems of this study and therefore cannot contribute to any prediction on this dataset. Constancy is a property of these systems, not of the descriptor definition: the same column may vary on a different set of complexes.

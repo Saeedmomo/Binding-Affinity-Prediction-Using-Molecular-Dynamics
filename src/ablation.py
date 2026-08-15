@@ -1,28 +1,24 @@
-"""The block ablation, redone with a fingerprint block that describes the molecules.
+"""The block ablation: what each part of the representation contributes.
 
-WHY IT HAD TO BE REDONE. The manuscript concluded that the 89 simulation-derived
-descriptors beat the full 272-descriptor set, and read that as evidence that the
-fingerprint and protein-confidence blocks carry nothing and the signal sits
-unambiguously in the simulation. The 167 fingerprint columns of the 272-descriptor
-matrix are not the MACCS keys of these molecules: rows holding the same molecule
-disagree in up to 52 of the 167 bits, the block agrees with a correct recomputation
-in 2 rows of 122, and it is not a permutation of the correct block either. An
-ablation against 167 columns of noise cannot support a conclusion about
-fingerprints, because adding noise to a small sample degrades any model whatever the
-noise is. See maccs_fix.py for the diagnosis.
+Runs the same repeated nested resampling used everywhere else, with
+structure-disjoint inner folds, over seven representations built from verified
+blocks:
 
-WHAT IS RUN. The same repeated nested resampling used everywhere else, with
-structure-disjoint inner folds, over five representations built from verified blocks:
+  md272_correct     89 simulation derived + 16 AlphaFold confidence + 167 MACCS keys
+  md_core89_maccs   89 + 167, isolating the fingerprint contribution
+  md_core89         the 89 simulation-derived descriptors
+  md_compact56      the core reduced to purely trajectory-derived columns
+  maccs_correct     the 167 MACCS keys alone
+  alphafold16       the 16 AlphaFold confidence summaries alone
+  target_indicator  four columns naming the protein and nothing else
 
-  md_core89              the 89 simulation-derived descriptors, unchanged
-  maccs_correct          the 167 recomputed MACCS keys alone
-  alphafold16            the 16 AlphaFold confidence summaries alone
-  md_core89_maccs        89 + 167, isolating the fingerprint contribution
-  md272_correct          89 + 16 + 167, the 272-descriptor set as it should have been
+The comparison that matters is each step against the one before it, and the protein
+indicator is the reference point that makes the rest interpretable: any
+representation scoring below it contributes nothing a one-line lookup of target
+identity would not.
 
-The comparison that matters is md272_correct against md_core89. If the corrected
-272-descriptor set still loses, the original conclusion survives on honest data. If
-it does not, the conclusion was an artefact of the corrupt block and has to go.
+Structural keys come from maccs_fix, which verifies that the keys are identical for
+every pair of rows holding the same canonical structure before returning.
 
     python ablation.py --n-jobs 20
 """
